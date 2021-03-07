@@ -18,5 +18,10 @@ return [
             'autocommit'       => env('KAFKA_AUTOCOMMIT', false),
             'debug'            => env('KAFKA_DEBUG', false),
         ],
+
+        'redis' => [
+            'connection' => env('REDIS_BROKER_CONNECTION', 'default'),
+            'group'      => env('REDIS_BROKER_GROUP', Str::snake(config('app.name'))),
+        ],
     ],
 ];

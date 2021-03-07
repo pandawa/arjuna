@@ -4,7 +4,10 @@ use Illuminate\Bus\Dispatcher as BusDispatcher;
 use Illuminate\Contracts\Bus\Dispatcher as BusDispatcherContract;
 use Illuminate\Contracts\Events\Dispatcher as EventDispatcherContract;
 use Illuminate\Foundation\Exceptions\Handler;
+use Illuminate\Redis\RedisManager;
+use Illuminate\Support\Arr;
 use Pandawa\Arjuna\Broker\Adapter\Kafka\KafkaBrokerAdapter;
+use Pandawa\Arjuna\Broker\Adapter\Redis\RedisBrokerAdapter;
 use Pandawa\Arjuna\Broker\Broker;
 use Pandawa\Arjuna\Broker\BrokerManager;
 use Pandawa\Arjuna\Dispatcher\EventDispatcher;
@@ -20,8 +23,13 @@ require __DIR__ . '/ConsumedUserRegistered.php';
 
 $app = new \Illuminate\Foundation\Application(__DIR__);
 $app->singleton('config', function () {
-    return new Illuminate\Config\Repository();
+    return new Illuminate\Config\Repository([
+        'arjuna' => [
+            'driver' => 'redis',
+        ]
+    ]);
 });
+
 $app->singleton(BusDispatcherContract::class, function () use ($app) {
     return new BusDispatcher($app);
 });
@@ -52,6 +60,17 @@ $app->singleton(TransformerRegistryInterface::class, function () use ($app) {
     return new TransformerRegistry(new \Illuminate\Foundation\Application(), []);
 });
 
+$app->singleton('redis-con', function ($app) {
+    return new RedisManager($app, 'phpredis', [
+        'default' => [
+            'host' => env('REDIS_HOST', '127.0.0.1'),
+            'password' => env('REDIS_PASSWORD', null),
+            'port' => env('REDIS_PORT', 6379),
+            'database' => 0,
+        ]
+    ]);
+});
+
 $app->singleton(Broker::class, function () use ($app) {
     return new BrokerManager($app, [
         new KafkaBrokerAdapter(
@@ -60,7 +79,8 @@ $app->singleton(Broker::class, function () use ($app) {
             'snappy',
             false,
             false
-        )
+        ),
+        new RedisBrokerAdapter('default', 'default')
     ]);
 });
 

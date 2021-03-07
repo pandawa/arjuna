@@ -31,5 +31,5 @@ $eventEmitter->listen(ConsumedUserRegistered::class, function (ConsumedUserRegis
 $app
     ->get(Worker::class)
     ->run(
-        new WorkerOptions(['v2.order'], 10 * 1000, 'kafka', null, null)
+        new WorkerOptions(['v1.order'], 10 * 1000, 'redis', null, null)
     );
