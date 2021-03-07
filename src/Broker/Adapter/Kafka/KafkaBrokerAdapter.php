@@ -44,7 +44,6 @@ final class KafkaBrokerAdapter implements Broker
     public function __construct(string $brokers, string $group, string $compressionType, bool $autocommit, bool $debug)
     {
         $this->config = $this->createConfig($brokers, $group, $compressionType, $autocommit, $debug);
-        $this->producer = new Producer($this->config);
     }
 
     public function name(): string
@@ -54,10 +53,10 @@ final class KafkaBrokerAdapter implements Broker
 
     public function send(string $topic, string $key, ProduceMessage $message): void
     {
-        $topic = $this->producer->newTopic($topic);
+        $topic = $this->producer()->newTopic($topic);
 
         $topic->produce(RD_KAFKA_PARTITION_UA, 0, $this->createStringPayload($message), $key);
-        $this->producer->poll(0);
+        $this->producer()->poll(0);
 
         $this->flush();
     }
@@ -73,7 +72,7 @@ final class KafkaBrokerAdapter implements Broker
 
     private function flush(int $timeout = 1000 * 60): void
     {
-        $result = $this->producer->flush($timeout);
+        $result = $this->producer()->flush($timeout);
 
         if (RD_KAFKA_RESP_ERR_NO_ERROR !== $result) {
             throw new RuntimeException('Unable to perform flush');
@@ -106,5 +105,16 @@ final class KafkaBrokerAdapter implements Broker
         }
 
         return $conf;
+    }
+
+    private function producer(): Producer
+    {
+        if ($producer = $this->producer) {
+            return $producer;
+        }
+
+        $this->producer = new Producer($this->config);
+
+        return $this->producer;
     }
 }
