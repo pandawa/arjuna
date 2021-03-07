@@ -6,6 +6,7 @@ namespace Pandawa\Arjuna\Broker\Adapter\Redis;
 
 use Illuminate\Redis\Connections\Connection;
 use Illuminate\Redis\Connections\PhpRedisConnection;
+use Illuminate\Support\Facades\Redis;
 
 /**
  * @author  Iqbal Maulana <iq.bluejack@gmail.com>
@@ -106,17 +107,7 @@ class Streamer
             return $redis;
         }
 
-        $redis = new \Illuminate\Redis\RedisManager(app(), 'phpredis', [
-            'default' => [
-                'host' => env('REDIS_HOST', '127.0.0.1'),
-                'password' => env('REDIS_PASSWORD', null),
-                'port' => env('REDIS_PORT', 6379),
-                'database' => 0,
-            ]
-        ]);
-
-        //$this->redis = app('redis-con')->connection($this->connection);
-        $this->redis = $redis->connection($this->connection);
+        $this->redis = Redis::connection($this->connection);
         $this->redis->setOption(\Redis::OPT_PREFIX, '');
 
         return $this->redis;
