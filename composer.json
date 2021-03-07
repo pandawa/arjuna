@@ -1,0 +1,46 @@
+{
+    "name": "pandawa/arjuna",
+    "description": "Microservices component for pandawa",
+    "keywords": [
+        "laravel",
+        "pandawa",
+        "arjuna",
+        "microservices"
+    ],
+    "license": "MIT",
+    "type": "library",
+    "minimum-stability": "dev",
+    "authors": [
+        {
+            "name": "Iqbal Maulana",
+            "email": "iq.bluejack@gmail.com"
+        }
+    ],
+    "require": {
+        "php": ">=7.2",
+        "pandawa/pandawa": "dev-master"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "~6.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "Pandawa\\Arjuna\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Tests\\": "tests/"
+        }
+    },
+    "extra": {
+        "branch-alias": {
+            "dev-master": "0.1-dev"
+        },
+        "laravel": {
+            "providers": [
+                "Pandawa\\Arjuna\\PandawaArjunaModule"
+            ]
+        }
+    }
+}

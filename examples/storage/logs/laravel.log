@@ -1,0 +1,130 @@
+[2020-03-18 11:43:58] laravel.EMERGENCY: Unable to create configured logger. Using emergency logger. {"exception":"[object] (InvalidArgumentException(code: 0): Log [] is not defined. at /Users/iqbalmaulana/Codes/pandawa/arjuna/vendor/laravel/framework/src/Illuminate/Log/LogManager.php:192)
+[stacktrace]
+#0 /Users/iqbalmaulana/Codes/pandawa/arjuna/vendor/laravel/framework/src/Illuminate/Log/LogManager.php(118): Illuminate\\Log\\LogManager->resolve(NULL)
+#1 /Users/iqbalmaulana/Codes/pandawa/arjuna/vendor/laravel/framework/src/Illuminate/Log/LogManager.php(98): Illuminate\\Log\\LogManager->get(NULL)
+#2 /Users/iqbalmaulana/Codes/pandawa/arjuna/vendor/laravel/framework/src/Illuminate/Log/LogManager.php(547): Illuminate\\Log\\LogManager->driver()
+#3 /Users/iqbalmaulana/Codes/pandawa/arjuna/vendor/laravel/framework/src/Illuminate/Foundation/Exceptions/Handler.php(121): Illuminate\\Log\\LogManager->error('127.0.0.1:9092/...', Array)
+#4 /Users/iqbalmaulana/Codes/pandawa/arjuna/src/Worker/Worker.php(99): Illuminate\\Foundation\\Exceptions\\Handler->report(Object(Pandawa\\Arjuna\\Broker\\Adapter\\Kafka\\KafkaException))
+#5 /Users/iqbalmaulana/Codes/pandawa/arjuna/src/Worker/Worker.php(50): Pandawa\\Arjuna\\Worker\\Worker->getMessage(Object(Pandawa\\Arjuna\\Broker\\Adapter\\Kafka\\KafkaConsumerAdapter), 10000)
+#6 [internal function]: Pandawa\\Arjuna\\Worker\\Worker->Pandawa\\Arjuna\\Worker\\{closure}(Object(Pandawa\\Arjuna\\Worker\\WorkerPlayer), Object(Pandawa\\Arjuna\\Worker\\WorkerOptions))
+#7 /Users/iqbalmaulana/Codes/pandawa/arjuna/src/Worker/WorkerPlayer.php(54): call_user_func(Object(Closure), Object(Pandawa\\Arjuna\\Worker\\WorkerPlayer), Object(Pandawa\\Arjuna\\Worker\\WorkerOptions))
+#8 /Users/iqbalmaulana/Codes/pandawa/arjuna/src/Worker/Worker.php(66): Pandawa\\Arjuna\\Worker\\WorkerPlayer->play()
+#9 /Users/iqbalmaulana/Codes/pandawa/arjuna/examples/consumer.php(30): Pandawa\\Arjuna\\Worker\\Worker->run(Object(Pandawa\\Arjuna\\Worker\\WorkerOptions))
+#10 {main}
+"} 
+[2020-03-18 11:43:58] laravel.ERROR: 127.0.0.1:9092/bootstrap: Connect to ipv4#127.0.0.1:9092 failed: Connection refused (after 0ms in state CONNECT) {"exception":"[object] (Pandawa\\Arjuna\\Broker\\Adapter\\Kafka\\KafkaException(code: -195): 127.0.0.1:9092/bootstrap: Connect to ipv4#127.0.0.1:9092 failed: Connection refused (after 0ms in state CONNECT) at /Users/iqbalmaulana/Codes/pandawa/arjuna/src/Broker/Adapter/Kafka/KafkaBrokerAdapter.php:99)
+[stacktrace]
+#0 [internal function]: Pandawa\\Arjuna\\Broker\\Adapter\\Kafka\\KafkaBrokerAdapter->Pandawa\\Arjuna\\Broker\\Adapter\\Kafka\\{closure}(Object(RdKafka\\KafkaConsumer), -195, '127.0.0.1:9092/...')
+#1 /Users/iqbalmaulana/Codes/pandawa/arjuna/src/Broker/Adapter/Kafka/KafkaConsumerAdapter.php(41): RdKafka\\KafkaConsumer->consume(10000)
+#2 /Users/iqbalmaulana/Codes/pandawa/arjuna/src/Worker/Worker.php(97): Pandawa\\Arjuna\\Broker\\Adapter\\Kafka\\KafkaConsumerAdapter->consume(10000)
+#3 /Users/iqbalmaulana/Codes/pandawa/arjuna/src/Worker/Worker.php(50): Pandawa\\Arjuna\\Worker\\Worker->getMessage(Object(Pandawa\\Arjuna\\Broker\\Adapter\\Kafka\\KafkaConsumerAdapter), 10000)
+#4 [internal function]: Pandawa\\Arjuna\\Worker\\Worker->Pandawa\\Arjuna\\Worker\\{closure}(Object(Pandawa\\Arjuna\\Worker\\WorkerPlayer), Object(Pandawa\\Arjuna\\Worker\\WorkerOptions))
+#5 /Users/iqbalmaulana/Codes/pandawa/arjuna/src/Worker/WorkerPlayer.php(54): call_user_func(Object(Closure), Object(Pandawa\\Arjuna\\Worker\\WorkerPlayer), Object(Pandawa\\Arjuna\\Worker\\WorkerOptions))
+#6 /Users/iqbalmaulana/Codes/pandawa/arjuna/src/Worker/Worker.php(66): Pandawa\\Arjuna\\Worker\\WorkerPlayer->play()
+#7 /Users/iqbalmaulana/Codes/pandawa/arjuna/examples/consumer.php(30): Pandawa\\Arjuna\\Worker\\Worker->run(Object(Pandawa\\Arjuna\\Worker\\WorkerOptions))
+#8 {main}
+"} 
+[2020-03-18 12:19:07] laravel.EMERGENCY: Unable to create configured logger. Using emergency logger. {"exception":"[object] (InvalidArgumentException(code: 0): Log [] is not defined. at /Users/iqbalmaulana/Codes/pandawa/arjuna/vendor/laravel/framework/src/Illuminate/Log/LogManager.php:192)
+[stacktrace]
+#0 /Users/iqbalmaulana/Codes/pandawa/arjuna/vendor/laravel/framework/src/Illuminate/Log/LogManager.php(118): Illuminate\\Log\\LogManager->resolve(NULL)
+#1 /Users/iqbalmaulana/Codes/pandawa/arjuna/vendor/laravel/framework/src/Illuminate/Log/LogManager.php(98): Illuminate\\Log\\LogManager->get(NULL)
+#2 /Users/iqbalmaulana/Codes/pandawa/arjuna/vendor/laravel/framework/src/Illuminate/Log/LogManager.php(547): Illuminate\\Log\\LogManager->driver()
+#3 /Users/iqbalmaulana/Codes/pandawa/arjuna/vendor/laravel/framework/src/Illuminate/Foundation/Exceptions/Handler.php(121): Illuminate\\Log\\LogManager->error('127.0.0.1:9092/...', Array)
+#4 /Users/iqbalmaulana/Codes/pandawa/arjuna/src/Worker/Worker.php(99): Illuminate\\Foundation\\Exceptions\\Handler->report(Object(Pandawa\\Arjuna\\Broker\\Adapter\\Kafka\\KafkaException))
+#5 /Users/iqbalmaulana/Codes/pandawa/arjuna/src/Worker/Worker.php(50): Pandawa\\Arjuna\\Worker\\Worker->getMessage(Object(Pandawa\\Arjuna\\Broker\\Adapter\\Kafka\\KafkaConsumerAdapter), 10000)
+#6 [internal function]: Pandawa\\Arjuna\\Worker\\Worker->Pandawa\\Arjuna\\Worker\\{closure}(Object(Pandawa\\Arjuna\\Worker\\WorkerPlayer), Object(Pandawa\\Arjuna\\Worker\\WorkerOptions))
+#7 /Users/iqbalmaulana/Codes/pandawa/arjuna/src/Worker/WorkerPlayer.php(54): call_user_func(Object(Closure), Object(Pandawa\\Arjuna\\Worker\\WorkerPlayer), Object(Pandawa\\Arjuna\\Worker\\WorkerOptions))
+#8 /Users/iqbalmaulana/Codes/pandawa/arjuna/src/Worker/Worker.php(66): Pandawa\\Arjuna\\Worker\\WorkerPlayer->play()
+#9 /Users/iqbalmaulana/Codes/pandawa/arjuna/examples/consumer.php(34): Pandawa\\Arjuna\\Worker\\Worker->run(Object(Pandawa\\Arjuna\\Worker\\WorkerOptions))
+#10 {main}
+"} 
+[2020-03-18 12:19:07] laravel.ERROR: 127.0.0.1:9092/bootstrap: Disconnected (after 54878ms in state UP) {"exception":"[object] (Pandawa\\Arjuna\\Broker\\Adapter\\Kafka\\KafkaException(code: -195): 127.0.0.1:9092/bootstrap: Disconnected (after 54878ms in state UP) at /Users/iqbalmaulana/Codes/pandawa/arjuna/src/Broker/Adapter/Kafka/KafkaBrokerAdapter.php:99)
+[stacktrace]
+#0 [internal function]: Pandawa\\Arjuna\\Broker\\Adapter\\Kafka\\KafkaBrokerAdapter->Pandawa\\Arjuna\\Broker\\Adapter\\Kafka\\{closure}(Object(RdKafka\\KafkaConsumer), -195, '127.0.0.1:9092/...')
+#1 /Users/iqbalmaulana/Codes/pandawa/arjuna/src/Broker/Adapter/Kafka/KafkaConsumerAdapter.php(41): RdKafka\\KafkaConsumer->consume(10000)
+#2 /Users/iqbalmaulana/Codes/pandawa/arjuna/src/Worker/Worker.php(97): Pandawa\\Arjuna\\Broker\\Adapter\\Kafka\\KafkaConsumerAdapter->consume(10000)
+#3 /Users/iqbalmaulana/Codes/pandawa/arjuna/src/Worker/Worker.php(50): Pandawa\\Arjuna\\Worker\\Worker->getMessage(Object(Pandawa\\Arjuna\\Broker\\Adapter\\Kafka\\KafkaConsumerAdapter), 10000)
+#4 [internal function]: Pandawa\\Arjuna\\Worker\\Worker->Pandawa\\Arjuna\\Worker\\{closure}(Object(Pandawa\\Arjuna\\Worker\\WorkerPlayer), Object(Pandawa\\Arjuna\\Worker\\WorkerOptions))
+#5 /Users/iqbalmaulana/Codes/pandawa/arjuna/src/Worker/WorkerPlayer.php(54): call_user_func(Object(Closure), Object(Pandawa\\Arjuna\\Worker\\WorkerPlayer), Object(Pandawa\\Arjuna\\Worker\\WorkerOptions))
+#6 /Users/iqbalmaulana/Codes/pandawa/arjuna/src/Worker/Worker.php(66): Pandawa\\Arjuna\\Worker\\WorkerPlayer->play()
+#7 /Users/iqbalmaulana/Codes/pandawa/arjuna/examples/consumer.php(34): Pandawa\\Arjuna\\Worker\\Worker->run(Object(Pandawa\\Arjuna\\Worker\\WorkerOptions))
+#8 {main}
+"} 
+[2020-03-18 12:19:35] laravel.EMERGENCY: Unable to create configured logger. Using emergency logger. {"exception":"[object] (InvalidArgumentException(code: 0): Log [] is not defined. at /Users/iqbalmaulana/Codes/pandawa/arjuna/vendor/laravel/framework/src/Illuminate/Log/LogManager.php:192)
+[stacktrace]
+#0 /Users/iqbalmaulana/Codes/pandawa/arjuna/vendor/laravel/framework/src/Illuminate/Log/LogManager.php(118): Illuminate\\Log\\LogManager->resolve(NULL)
+#1 /Users/iqbalmaulana/Codes/pandawa/arjuna/vendor/laravel/framework/src/Illuminate/Log/LogManager.php(98): Illuminate\\Log\\LogManager->get(NULL)
+#2 /Users/iqbalmaulana/Codes/pandawa/arjuna/vendor/laravel/framework/src/Illuminate/Log/LogManager.php(547): Illuminate\\Log\\LogManager->driver()
+#3 /Users/iqbalmaulana/Codes/pandawa/arjuna/vendor/laravel/framework/src/Illuminate/Foundation/Exceptions/Handler.php(121): Illuminate\\Log\\LogManager->error('127.0.0.1:9092/...', Array)
+#4 /Users/iqbalmaulana/Codes/pandawa/arjuna/src/Worker/Worker.php(99): Illuminate\\Foundation\\Exceptions\\Handler->report(Object(Pandawa\\Arjuna\\Broker\\Adapter\\Kafka\\KafkaException))
+#5 /Users/iqbalmaulana/Codes/pandawa/arjuna/src/Worker/Worker.php(50): Pandawa\\Arjuna\\Worker\\Worker->getMessage(Object(Pandawa\\Arjuna\\Broker\\Adapter\\Kafka\\KafkaConsumerAdapter), 10000)
+#6 [internal function]: Pandawa\\Arjuna\\Worker\\Worker->Pandawa\\Arjuna\\Worker\\{closure}(Object(Pandawa\\Arjuna\\Worker\\WorkerPlayer), Object(Pandawa\\Arjuna\\Worker\\WorkerOptions))
+#7 /Users/iqbalmaulana/Codes/pandawa/arjuna/src/Worker/WorkerPlayer.php(54): call_user_func(Object(Closure), Object(Pandawa\\Arjuna\\Worker\\WorkerPlayer), Object(Pandawa\\Arjuna\\Worker\\WorkerOptions))
+#8 /Users/iqbalmaulana/Codes/pandawa/arjuna/src/Worker/Worker.php(66): Pandawa\\Arjuna\\Worker\\WorkerPlayer->play()
+#9 /Users/iqbalmaulana/Codes/pandawa/arjuna/examples/consumer.php(34): Pandawa\\Arjuna\\Worker\\Worker->run(Object(Pandawa\\Arjuna\\Worker\\WorkerOptions))
+#10 {main}
+"} 
+[2020-03-18 12:19:35] laravel.ERROR: 127.0.0.1:9092/bootstrap: Disconnected (after 10325ms in state UP) {"exception":"[object] (Pandawa\\Arjuna\\Broker\\Adapter\\Kafka\\KafkaException(code: -195): 127.0.0.1:9092/bootstrap: Disconnected (after 10325ms in state UP) at /Users/iqbalmaulana/Codes/pandawa/arjuna/src/Broker/Adapter/Kafka/KafkaBrokerAdapter.php:99)
+[stacktrace]
+#0 [internal function]: Pandawa\\Arjuna\\Broker\\Adapter\\Kafka\\KafkaBrokerAdapter->Pandawa\\Arjuna\\Broker\\Adapter\\Kafka\\{closure}(Object(RdKafka\\KafkaConsumer), -195, '127.0.0.1:9092/...')
+#1 /Users/iqbalmaulana/Codes/pandawa/arjuna/src/Broker/Adapter/Kafka/KafkaConsumerAdapter.php(41): RdKafka\\KafkaConsumer->consume(10000)
+#2 /Users/iqbalmaulana/Codes/pandawa/arjuna/src/Worker/Worker.php(97): Pandawa\\Arjuna\\Broker\\Adapter\\Kafka\\KafkaConsumerAdapter->consume(10000)
+#3 /Users/iqbalmaulana/Codes/pandawa/arjuna/src/Worker/Worker.php(50): Pandawa\\Arjuna\\Worker\\Worker->getMessage(Object(Pandawa\\Arjuna\\Broker\\Adapter\\Kafka\\KafkaConsumerAdapter), 10000)
+#4 [internal function]: Pandawa\\Arjuna\\Worker\\Worker->Pandawa\\Arjuna\\Worker\\{closure}(Object(Pandawa\\Arjuna\\Worker\\WorkerPlayer), Object(Pandawa\\Arjuna\\Worker\\WorkerOptions))
+#5 /Users/iqbalmaulana/Codes/pandawa/arjuna/src/Worker/WorkerPlayer.php(54): call_user_func(Object(Closure), Object(Pandawa\\Arjuna\\Worker\\WorkerPlayer), Object(Pandawa\\Arjuna\\Worker\\WorkerOptions))
+#6 /Users/iqbalmaulana/Codes/pandawa/arjuna/src/Worker/Worker.php(66): Pandawa\\Arjuna\\Worker\\WorkerPlayer->play()
+#7 /Users/iqbalmaulana/Codes/pandawa/arjuna/examples/consumer.php(34): Pandawa\\Arjuna\\Worker\\Worker->run(Object(Pandawa\\Arjuna\\Worker\\WorkerOptions))
+#8 {main}
+"} 
+[2020-03-18 12:23:02] laravel.EMERGENCY: Unable to create configured logger. Using emergency logger. {"exception":"[object] (InvalidArgumentException(code: 0): Log [] is not defined. at /Users/iqbalmaulana/Codes/pandawa/arjuna/vendor/laravel/framework/src/Illuminate/Log/LogManager.php:192)
+[stacktrace]
+#0 /Users/iqbalmaulana/Codes/pandawa/arjuna/vendor/laravel/framework/src/Illuminate/Log/LogManager.php(118): Illuminate\\Log\\LogManager->resolve(NULL)
+#1 /Users/iqbalmaulana/Codes/pandawa/arjuna/vendor/laravel/framework/src/Illuminate/Log/LogManager.php(98): Illuminate\\Log\\LogManager->get(NULL)
+#2 /Users/iqbalmaulana/Codes/pandawa/arjuna/vendor/laravel/framework/src/Illuminate/Log/LogManager.php(547): Illuminate\\Log\\LogManager->driver()
+#3 /Users/iqbalmaulana/Codes/pandawa/arjuna/vendor/laravel/framework/src/Illuminate/Foundation/Exceptions/Handler.php(121): Illuminate\\Log\\LogManager->error('127.0.0.1:9092/...', Array)
+#4 /Users/iqbalmaulana/Codes/pandawa/arjuna/src/Worker/Worker.php(99): Illuminate\\Foundation\\Exceptions\\Handler->report(Object(Pandawa\\Arjuna\\Broker\\Adapter\\Kafka\\KafkaException))
+#5 /Users/iqbalmaulana/Codes/pandawa/arjuna/src/Worker/Worker.php(50): Pandawa\\Arjuna\\Worker\\Worker->getMessage(Object(Pandawa\\Arjuna\\Broker\\Adapter\\Kafka\\KafkaConsumerAdapter), 10000)
+#6 [internal function]: Pandawa\\Arjuna\\Worker\\Worker->Pandawa\\Arjuna\\Worker\\{closure}(Object(Pandawa\\Arjuna\\Worker\\WorkerPlayer), Object(Pandawa\\Arjuna\\Worker\\WorkerOptions))
+#7 /Users/iqbalmaulana/Codes/pandawa/arjuna/src/Worker/WorkerPlayer.php(54): call_user_func(Object(Closure), Object(Pandawa\\Arjuna\\Worker\\WorkerPlayer), Object(Pandawa\\Arjuna\\Worker\\WorkerOptions))
+#8 /Users/iqbalmaulana/Codes/pandawa/arjuna/src/Worker/Worker.php(66): Pandawa\\Arjuna\\Worker\\WorkerPlayer->play()
+#9 /Users/iqbalmaulana/Codes/pandawa/arjuna/examples/consumer.php(34): Pandawa\\Arjuna\\Worker\\Worker->run(Object(Pandawa\\Arjuna\\Worker\\WorkerOptions))
+#10 {main}
+"} 
+[2020-03-18 12:23:02] laravel.ERROR: 127.0.0.1:9092/bootstrap: Disconnected (after 88812ms in state UP) {"exception":"[object] (Pandawa\\Arjuna\\Broker\\Adapter\\Kafka\\KafkaException(code: -195): 127.0.0.1:9092/bootstrap: Disconnected (after 88812ms in state UP) at /Users/iqbalmaulana/Codes/pandawa/arjuna/src/Broker/Adapter/Kafka/KafkaBrokerAdapter.php:99)
+[stacktrace]
+#0 [internal function]: Pandawa\\Arjuna\\Broker\\Adapter\\Kafka\\KafkaBrokerAdapter->Pandawa\\Arjuna\\Broker\\Adapter\\Kafka\\{closure}(Object(RdKafka\\KafkaConsumer), -195, '127.0.0.1:9092/...')
+#1 /Users/iqbalmaulana/Codes/pandawa/arjuna/src/Broker/Adapter/Kafka/KafkaConsumerAdapter.php(41): RdKafka\\KafkaConsumer->consume(10000)
+#2 /Users/iqbalmaulana/Codes/pandawa/arjuna/src/Worker/Worker.php(97): Pandawa\\Arjuna\\Broker\\Adapter\\Kafka\\KafkaConsumerAdapter->consume(10000)
+#3 /Users/iqbalmaulana/Codes/pandawa/arjuna/src/Worker/Worker.php(50): Pandawa\\Arjuna\\Worker\\Worker->getMessage(Object(Pandawa\\Arjuna\\Broker\\Adapter\\Kafka\\KafkaConsumerAdapter), 10000)
+#4 [internal function]: Pandawa\\Arjuna\\Worker\\Worker->Pandawa\\Arjuna\\Worker\\{closure}(Object(Pandawa\\Arjuna\\Worker\\WorkerPlayer), Object(Pandawa\\Arjuna\\Worker\\WorkerOptions))
+#5 /Users/iqbalmaulana/Codes/pandawa/arjuna/src/Worker/WorkerPlayer.php(54): call_user_func(Object(Closure), Object(Pandawa\\Arjuna\\Worker\\WorkerPlayer), Object(Pandawa\\Arjuna\\Worker\\WorkerOptions))
+#6 /Users/iqbalmaulana/Codes/pandawa/arjuna/src/Worker/Worker.php(66): Pandawa\\Arjuna\\Worker\\WorkerPlayer->play()
+#7 /Users/iqbalmaulana/Codes/pandawa/arjuna/examples/consumer.php(34): Pandawa\\Arjuna\\Worker\\Worker->run(Object(Pandawa\\Arjuna\\Worker\\WorkerOptions))
+#8 {main}
+"} 
+[2020-03-18 12:25:14] laravel.EMERGENCY: Unable to create configured logger. Using emergency logger. {"exception":"[object] (InvalidArgumentException(code: 0): Log [] is not defined. at /Users/iqbalmaulana/Codes/pandawa/arjuna/vendor/laravel/framework/src/Illuminate/Log/LogManager.php:192)
+[stacktrace]
+#0 /Users/iqbalmaulana/Codes/pandawa/arjuna/vendor/laravel/framework/src/Illuminate/Log/LogManager.php(118): Illuminate\\Log\\LogManager->resolve(NULL)
+#1 /Users/iqbalmaulana/Codes/pandawa/arjuna/vendor/laravel/framework/src/Illuminate/Log/LogManager.php(98): Illuminate\\Log\\LogManager->get(NULL)
+#2 /Users/iqbalmaulana/Codes/pandawa/arjuna/vendor/laravel/framework/src/Illuminate/Log/LogManager.php(547): Illuminate\\Log\\LogManager->driver()
+#3 /Users/iqbalmaulana/Codes/pandawa/arjuna/vendor/laravel/framework/src/Illuminate/Foundation/Exceptions/Handler.php(121): Illuminate\\Log\\LogManager->error('127.0.0.1:9092/...', Array)
+#4 /Users/iqbalmaulana/Codes/pandawa/arjuna/src/Worker/Worker.php(99): Illuminate\\Foundation\\Exceptions\\Handler->report(Object(Pandawa\\Arjuna\\Broker\\Adapter\\Kafka\\KafkaException))
+#5 /Users/iqbalmaulana/Codes/pandawa/arjuna/src/Worker/Worker.php(50): Pandawa\\Arjuna\\Worker\\Worker->getMessage(Object(Pandawa\\Arjuna\\Broker\\Adapter\\Kafka\\KafkaConsumerAdapter), 10000)
+#6 [internal function]: Pandawa\\Arjuna\\Worker\\Worker->Pandawa\\Arjuna\\Worker\\{closure}(Object(Pandawa\\Arjuna\\Worker\\WorkerPlayer), Object(Pandawa\\Arjuna\\Worker\\WorkerOptions))
+#7 /Users/iqbalmaulana/Codes/pandawa/arjuna/src/Worker/WorkerPlayer.php(54): call_user_func(Object(Closure), Object(Pandawa\\Arjuna\\Worker\\WorkerPlayer), Object(Pandawa\\Arjuna\\Worker\\WorkerOptions))
+#8 /Users/iqbalmaulana/Codes/pandawa/arjuna/src/Worker/Worker.php(66): Pandawa\\Arjuna\\Worker\\WorkerPlayer->play()
+#9 /Users/iqbalmaulana/Codes/pandawa/arjuna/examples/consumer.php(34): Pandawa\\Arjuna\\Worker\\Worker->run(Object(Pandawa\\Arjuna\\Worker\\WorkerOptions))
+#10 {main}
+"} 
+[2020-03-18 12:25:14] laravel.ERROR: 127.0.0.1:9092/bootstrap: Connect to ipv4#127.0.0.1:9092 failed: Connection refused (after 0ms in state CONNECT) {"exception":"[object] (Pandawa\\Arjuna\\Broker\\Adapter\\Kafka\\KafkaException(code: -195): 127.0.0.1:9092/bootstrap: Connect to ipv4#127.0.0.1:9092 failed: Connection refused (after 0ms in state CONNECT) at /Users/iqbalmaulana/Codes/pandawa/arjuna/src/Broker/Adapter/Kafka/KafkaBrokerAdapter.php:99)
+[stacktrace]
+#0 [internal function]: Pandawa\\Arjuna\\Broker\\Adapter\\Kafka\\KafkaBrokerAdapter->Pandawa\\Arjuna\\Broker\\Adapter\\Kafka\\{closure}(Object(RdKafka\\KafkaConsumer), -195, '127.0.0.1:9092/...')
+#1 /Users/iqbalmaulana/Codes/pandawa/arjuna/src/Broker/Adapter/Kafka/KafkaConsumerAdapter.php(41): RdKafka\\KafkaConsumer->consume(10000)
+#2 /Users/iqbalmaulana/Codes/pandawa/arjuna/src/Worker/Worker.php(97): Pandawa\\Arjuna\\Broker\\Adapter\\Kafka\\KafkaConsumerAdapter->consume(10000)
+#3 /Users/iqbalmaulana/Codes/pandawa/arjuna/src/Worker/Worker.php(50): Pandawa\\Arjuna\\Worker\\Worker->getMessage(Object(Pandawa\\Arjuna\\Broker\\Adapter\\Kafka\\KafkaConsumerAdapter), 10000)
+#4 [internal function]: Pandawa\\Arjuna\\Worker\\Worker->Pandawa\\Arjuna\\Worker\\{closure}(Object(Pandawa\\Arjuna\\Worker\\WorkerPlayer), Object(Pandawa\\Arjuna\\Worker\\WorkerOptions))
+#5 /Users/iqbalmaulana/Codes/pandawa/arjuna/src/Worker/WorkerPlayer.php(54): call_user_func(Object(Closure), Object(Pandawa\\Arjuna\\Worker\\WorkerPlayer), Object(Pandawa\\Arjuna\\Worker\\WorkerOptions))
+#6 /Users/iqbalmaulana/Codes/pandawa/arjuna/src/Worker/Worker.php(66): Pandawa\\Arjuna\\Worker\\WorkerPlayer->play()
+#7 /Users/iqbalmaulana/Codes/pandawa/arjuna/examples/consumer.php(34): Pandawa\\Arjuna\\Worker\\Worker->run(Object(Pandawa\\Arjuna\\Worker\\WorkerOptions))
+#8 {main}
+"} 

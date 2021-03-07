@@ -1,0 +1,16 @@
+Pandawa\Arjuna\Broker\BrokerManager:
+    class: Pandawa\Arjuna\Broker\BrokerManager
+    alias: Pandawa\Arjuna\Broker\Broker
+    arguments:
+        - '@app'
+        - '#arjunaBroker'
+
+Pandawa\Arjuna\Broker\Adapter\Kafka:
+    class: Pandawa\Arjuna\Broker\Adapter\Kafka
+    tag: arjunaBroker
+    arguments:
+        - '%arjuna.drivers.kafka.brokers%'
+        - '%arjuna.drivers.kafka.group%'
+        - '%arjuna.drivers.kafka.compression_type%'
+        - '%arjuna.drivers.kafka.autocommit%'
+        - '%arjuna.drivers.kafka.debug%'
