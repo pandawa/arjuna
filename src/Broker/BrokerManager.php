@@ -84,7 +84,7 @@ final class BrokerManager implements Broker
 
     public function getDefaultDriver(): string
     {
-        return $this->container->get('config')['arjuna.driver'] ?: 'kafka';
+        return $this->container->get('config')['arjuna.default'] ?: 'kafka';
     }
 
     public function name(): string
