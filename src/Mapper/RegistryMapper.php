@@ -11,7 +11,7 @@ class RegistryMapper
 {
     private $mappers = [];
 
-    public function __construct(array $mappers)
+    public function __construct(array $mappers = [])
     {
         $this->mappers = $mappers;
     }
