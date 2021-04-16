@@ -9,6 +9,7 @@ use Illuminate\Contracts\Queue\Factory as QueueFactoryContract;
 use Illuminate\Events\Dispatcher;
 use Pandawa\Arjuna\Dispatcher\EventDispatcher;
 use Pandawa\Arjuna\Listener\MessageProducer;
+use Pandawa\Arjuna\Mapper\RegistryMapper;
 use Pandawa\Component\Module\AbstractModule;
 
 /**
@@ -20,6 +21,10 @@ final class PandawaArjunaModule extends AbstractModule
     {
         $this->publishResources();
         $this->listenAllEvent();
+
+        $this->app->singleton(RegistryMapper::class, function ($app) {
+            return new RegistryMapper($app['config']->get('arjuna.event_mappers', []));
+        });
     }
 
     protected function init(): void
