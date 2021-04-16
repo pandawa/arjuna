@@ -6,7 +6,7 @@ Pandawa\Arjuna\Broker\BrokerManager:
         - '#arjunaBroker'
 
 Pandawa\Arjuna\Broker\Adapter\Kafka:
-    class: Pandawa\Arjuna\Broker\Adapter\Kafka
+    class: Pandawa\Arjuna\Broker\Adapter\Kafka\KafkaBrokerAdapter
     tag: arjunaBroker
     arguments:
         - '%arjuna.drivers.kafka.brokers%'
