@@ -29,6 +29,8 @@ final class PandawaArjunaModule extends AbstractModule
 
     protected function init(): void
     {
+        $this->mergeConfigFrom(__DIR__.'/../config/arjuna.php', 'arjuna');
+
         $this->app->singleton('events', function ($app) {
             return (new EventDispatcher($app))->setQueueResolver(function () use ($app) {
                 return $app->make(QueueFactoryContract::class);
@@ -46,12 +48,11 @@ final class PandawaArjunaModule extends AbstractModule
 
     private function publishResources(): void
     {
-        $this->publishes(
-            [
-                __DIR__.'/Resources/config.php' => $this->app['path.config'].DIRECTORY_SEPARATOR.'arjuna.php',
-            ],
-            'arjuna'
-        );
+        if ($this->app->runningInConsole()) {
+            $this->publishes([
+                __DIR__.'/../config/arjuna.php' => config_path('arjuna.php'),
+            ], ['config', 'arjuna']);
+        }
     }
 
     private function dispatcher(): DispatcherContract

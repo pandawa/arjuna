@@ -24,4 +24,8 @@ return [
             'group'      => env('REDIS_BROKER_GROUP', Str::snake(config('app.name'))),
         ],
     ],
+
+    'event_mappers' => [
+        // Register your event mappers
+    ],
 ];
