@@ -12,7 +12,7 @@ return [
 
     'drivers' => [
         'kafka' => [
-            'brokers'          => env('KAFKA_BROKERS'),
+            'brokers'          => env('KAFKA_BROKERS', '127.0.0.1'),
             'group'            => env('KAFKA_GROUP', Str::snake(config('app.name'))),
             'compression_type' => env('KAFKA_COMPRESSION', 'snappy'),
             'autocommit'       => env('KAFKA_AUTOCOMMIT', false),
