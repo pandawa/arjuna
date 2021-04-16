@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Pandawa\Arjuna\Broker\Adapter\Redis;
 
+use Illuminate\Support\Str;
 use Pandawa\Arjuna\Broker\ConsumedMessage;
 use Pandawa\Arjuna\Broker\Consumer;
 
@@ -55,13 +56,21 @@ final class RedisConsumerAdapter implements Consumer
             return $this->shift();
         }
 
-        $messages = $this->redis->await($this->getConsumerName(), $this->buildStream(), $timeout);
+        try {
+            $messages = $this->redis->await($this->getConsumerName(), $this->buildStream(), $timeout);
 
-        if (!$messages) {
-            return null;
+            if (!$messages) {
+                return null;
+            }
+
+            return $this->processMessages($messages);
+        } catch (\Exception $e) {
+            if (Str::contains(strtolower($e->getMessage()), ['read error on connection'])) {
+                return null;
+            }
+
+            throw $e;
         }
-
-        return $this->processMessages($messages);
     }
 
     private function shift(): ConsumedMessage

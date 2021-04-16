@@ -122,7 +122,7 @@ class ConsumeConsole extends Command
                 "<{$type}>[%s][%s] %s</{$type}> %s for %s",
                 Carbon::now()->format('Y-m-d H:i:s'),
                 $message->messageId(),
-                str_pad("{$status}:", 11),
+                str_pad("{$status}", 11),
                 $message->messageName(),
                 implode(',', $topics)
             )
@@ -133,7 +133,7 @@ class ConsumeConsole extends Command
     {
         $this->output->writeln(
             sprintf(
-                "<{$type}>[%s][%s] %s</{$type}>",
+                "<{$type}>[%s] %s %s</{$type}>",
                 Carbon::now()->format('Y-m-d H:i:s'),
                 str_pad("{$status}:", 11),
                 implode(',', $topics)
