@@ -36,7 +36,8 @@ $app->singleton(BusDispatcherContract::class, function () use ($app) {
 $app->singleton(RegistryMapper::class, function () {
     return new RegistryMapper(
         [
-            'user-registered' => [
+            // Try use SelfProduceMessage
+            /*'user-registered' => [
                 'available_versions' => [1, 2],
                 'produce_topic' => 'order',
                 'produce_key' => 'person.id',
@@ -52,7 +53,7 @@ $app->singleton(RegistryMapper::class, function () {
                         'versions' => [1],
                     ],
                 ]
-            ],
+            ],*/
         ]
     );
 });

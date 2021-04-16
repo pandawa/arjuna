@@ -13,6 +13,11 @@ class ConsumedUserRegistered extends AbstractMessage implements NameableMessageI
     protected $position;
     protected $person;
 
+    public static function name(): string
+    {
+        return 'user-registered';
+    }
+
     /**
      * @return mixed
      */
@@ -27,10 +32,5 @@ class ConsumedUserRegistered extends AbstractMessage implements NameableMessageI
     public function getPerson()
     {
         return $this->person;
-    }
-
-    public static function name(): string
-    {
-        return 'user-registered';
     }
 }

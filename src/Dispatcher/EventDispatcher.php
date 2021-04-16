@@ -20,7 +20,7 @@ final class EventDispatcher extends Dispatcher
      */
     private $aliases = [];
 
-    public function listen($events, $listener): void
+    public function listen($events, $listener = null)
     {
         foreach ((array) $events as $event) {
             if (class_exists($event, true)) {

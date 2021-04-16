@@ -4,12 +4,12 @@ declare(strict_types=1);
 
 namespace Pandawa\Arjuna\Mapper;
 
-use Pandawa\Component\Message\AbstractMessage;
+use Pandawa\Arjuna\Messaging\SelfProduceMessage;
 
 /**
  * @author  Iqbal Maulana <iq.bluejack@gmail.com>
  */
-final class EventMapper
+final class EventMapper implements SelfProduceMessage
 {
     /**
      * @var string

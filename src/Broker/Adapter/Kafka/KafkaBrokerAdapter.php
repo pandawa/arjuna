@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace Pandawa\Arjuna\Broker\Adapter\Kafka;
 
 use Pandawa\Arjuna\Broker\Broker;
-use Pandawa\Arjuna\Broker\ProduceMessage;
 use Pandawa\Arjuna\Broker\Consumer;
+use Pandawa\Arjuna\Broker\ProduceMessage;
 use Pandawa\Arjuna\Messaging\Message;
 use RdKafka\Conf;
 use RdKafka\Producer;
@@ -33,6 +33,11 @@ final class KafkaBrokerAdapter implements Broker
     private $config;
 
     /**
+     * @var array
+     */
+    private $options = [];
+
+    /**
      * Constructor.
      *
      * @param string $brokers
@@ -43,7 +48,13 @@ final class KafkaBrokerAdapter implements Broker
      */
     public function __construct(string $brokers, string $group, string $compressionType, bool $autocommit, bool $debug)
     {
-        $this->config = $this->createConfig($brokers, $group, $compressionType, $autocommit, $debug);
+        $this->options = [
+            'brokers'          => $brokers,
+            'group'            => $group,
+            'compression_type' => $compressionType,
+            'autocommit'       => $autocommit,
+            'debug'            => $debug,
+        ];
     }
 
     public function name(): string
@@ -64,7 +75,7 @@ final class KafkaBrokerAdapter implements Broker
     public function consumer(): Consumer
     {
         if (null === $this->consumer) {
-            $this->consumer = new KafkaConsumerAdapter($this->config);
+            $this->consumer = new KafkaConsumerAdapter($this->config());
         }
 
         return $this->consumer;
@@ -100,7 +111,7 @@ final class KafkaBrokerAdapter implements Broker
         });
 
         if (true === $debug) {
-            $conf->set('log_level', (string) LOG_DEBUG);
+            $conf->set('log_level', (string)LOG_DEBUG);
             $conf->set('debug', 'all');
         }
 
@@ -113,8 +124,23 @@ final class KafkaBrokerAdapter implements Broker
             return $producer;
         }
 
-        $this->producer = new Producer($this->config);
+        $this->producer = new Producer($this->config());
 
         return $this->producer;
+    }
+
+    private function config(): Conf
+    {
+        if (null !== $this->config) {
+            return $this->config;
+        }
+
+        $this->config = $this->createConfig(
+            $this->options['brokers'],
+            $this->options['group'],
+            $this->options['compression_type'],
+            $this->options['autocommit'],
+            $this->options['debug']
+        );
     }
 }

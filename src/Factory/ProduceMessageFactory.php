@@ -12,6 +12,7 @@ use Pandawa\Arjuna\Broker\ProduceMessage;
 use Pandawa\Arjuna\Mapper\EventMapper;
 use Pandawa\Arjuna\Mapper\RegistryMapper;
 use Pandawa\Arjuna\Messaging\Message;
+use Pandawa\Arjuna\Messaging\SelfProduceMessage;
 use Pandawa\Component\Message\AbstractMessage;
 use Pandawa\Component\Message\NameableMessageInterface;
 use Pandawa\Component\Transformer\TransformerRegistryInterface;
@@ -54,6 +55,10 @@ final class ProduceMessageFactory
     public function createFromMessage(AbstractMessage $message): array
     {
         if (!$this->registry->has($eventName = $this->getEventName($message))) {
+            if ($message instanceof SelfProduceMessage) {
+                return [$this->createBrokerMessage(null, $message, $message)];
+            }
+
             return [];
         }
 
@@ -74,14 +79,14 @@ final class ProduceMessageFactory
     /**
      * Create message broker and transform the value.
      *
-     * @param string|null     $version
-     * @param EventMapper     $mapper
-     * @param AbstractMessage $message
+     * @param string|null        $version
+     * @param SelfProduceMessage $mapper
+     * @param AbstractMessage    $message
      *
      * @return ProduceMessage
      * @throws Exception
      */
-    private function createBrokerMessage($version, EventMapper $mapper, AbstractMessage $message): ProduceMessage
+    private function createBrokerMessage($version, SelfProduceMessage $mapper, AbstractMessage $message): ProduceMessage
     {
         $name = $message instanceof NameableMessageInterface ? $message::name() : get_class($message);
         $topic = $version ? sprintf('v%s.%s', $version, $mapper->getProduceTopic()) : $mapper->getProduceTopic();
@@ -107,29 +112,36 @@ final class ProduceMessageFactory
     /**
      * Transform message payload from event mapper and version.
      *
-     * @param string|null     $version
-     * @param EventMapper     $mapper
-     * @param AbstractMessage $message
+     * @param string|null        $version
+     * @param SelfProduceMessage $mapper
+     * @param AbstractMessage    $message
      *
      * @return array
      */
-    private function transformPayload($version, EventMapper $mapper, AbstractMessage $message): array
+    private function transformPayload($version, SelfProduceMessage $mapper, AbstractMessage $message): array
     {
-        $mapping = $mapper->getAttributes();
         $data = [];
 
-        foreach ($mapping as $key => $value) {
-            if (is_numeric($key)) {
-                Arr::set($data, $value, $this->getMessageValue($value, $message));
+        if ($mapper instanceof EventMapper) {
+            $mapping = $mapper->getAttributes();
 
-                continue;
+            foreach ($mapping as $key => $value) {
+                if (is_numeric($key)) {
+                    Arr::set($data, $value, $this->getMessageValue($value, $message));
+
+                    continue;
+                }
+
+                if (!$this->availableInVersion($version, $key, $value)) {
+                    continue;
+                }
+
+                Arr::set($data, $key, $this->getMessageValue($value['from'] ?? $key, $message));
             }
-
-            if (!$this->availableInVersion($version, $key, $value)) {
-                continue;
+        } else {
+            foreach ($message->payload()->keys() as $key) {
+                Arr::set($data, $key, $this->getMessageValue($key, $message));
             }
-
-            Arr::set($data, $key, $this->getMessageValue($value['from'] ?? $key, $message));
         }
 
         return $data;

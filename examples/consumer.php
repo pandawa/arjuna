@@ -28,8 +28,14 @@ $eventEmitter->listen(ConsumedUserRegistered::class, function (ConsumedUserRegis
     echo "Raised event with payload " . json_encode($event->payload()->all()) . "\n";
 });
 
-$app
+/*$app
     ->get(Worker::class)
     ->run(
         new WorkerOptions(['v1.order'], 10 * 1000, 'redis', null, null)
+    );*/
+
+$app
+    ->get(Worker::class)
+    ->run(
+        new WorkerOptions(['order'], 10 * 1000, 'redis', null, null)
     );
