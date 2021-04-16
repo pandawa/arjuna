@@ -5,7 +5,7 @@ Pandawa\Arjuna\Broker\BrokerManager:
         - '@app'
         - '#arjunaBroker'
 
-Pandawa\Arjuna\Broker\Adapter\Kafka:
+Pandawa\Arjuna\Broker\Adapter\Kafka\KafkaBrokerAdapter:
     class: Pandawa\Arjuna\Broker\Adapter\Kafka\KafkaBrokerAdapter
     tag: arjunaBroker
     arguments:
@@ -14,3 +14,10 @@ Pandawa\Arjuna\Broker\Adapter\Kafka:
         - '%arjuna.drivers.kafka.compression_type%'
         - '%arjuna.drivers.kafka.autocommit%'
         - '%arjuna.drivers.kafka.debug%'
+
+Pandawa\Arjuna\Broker\Adapter\Redis\RedisBrokerAdapter:
+    class: Pandawa\Arjuna\Broker\Adapter\Redis\RedisBrokerAdapter
+    tag: arjunaBroker
+    arguments:
+        - '%arjuna.drivers.redis.connection%'
+        - '%arjuna.drivers.redis.group%'

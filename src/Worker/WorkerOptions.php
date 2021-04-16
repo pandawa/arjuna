@@ -72,7 +72,7 @@ class WorkerOptions
 
     public function getBroker(): ?string
     {
-        return $this->broker;
+        return $this->broker ?? config('arjuna.default');
     }
 
     public function getQueue(): ?string
