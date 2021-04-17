@@ -21,3 +21,4 @@ Pandawa\Arjuna\Broker\Adapter\Redis\RedisBrokerAdapter:
     arguments:
         - '%arjuna.drivers.redis.connection%'
         - '%arjuna.drivers.redis.group%'
+        - '%arjuna.drivers.redis.retention_period%'

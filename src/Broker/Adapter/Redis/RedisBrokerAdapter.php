@@ -23,15 +23,21 @@ final class RedisBrokerAdapter implements Broker
      */
     private $group;
 
-    public function __construct(string $connection, string $group)
+    /**
+     * @var int
+     */
+    private $retentionPeriod;
+
+    public function __construct(string $connection, string $group, int $retentionPeriod)
     {
         $this->redis = new Streamer($connection, $group);
         $this->group = $group;
+        $this->retentionPeriod = $retentionPeriod;
     }
 
     public function send(string $topic, string $key, ProduceMessage $message): void
     {
-        $this->redis->add($topic, '*', $this->encodeMessage($message));
+        $this->redis->add($topic, '*', $this->encodeMessage($message), $this->retentionPeriod);
     }
 
     public function consumer(): Consumer

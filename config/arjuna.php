@@ -20,8 +20,9 @@ return [
         ],
 
         'redis' => [
-            'connection' => env('REDIS_BROKER_CONNECTION', 'default'),
-            'group'      => env('REDIS_BROKER_GROUP', Str::snake(config('app.name'))),
+            'connection'       => env('REDIS_BROKER_CONNECTION', 'default'),
+            'group'            => env('REDIS_BROKER_GROUP', Str::snake(config('app.name'))),
+            'retention_period' => env('REDIS_BROKER_RETENTION_PERIOD', 7),
         ],
     ],
 

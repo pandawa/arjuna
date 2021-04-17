@@ -38,9 +38,10 @@ class Streamer
         $this->group = $group;
     }
 
-    public function add(string $key, string $id, array $message): void
+    public function add(string $key, string $id, array $message, int $retentionPeriod): void
     {
         $this->redis()->xAdd($key, $id, $message);
+        $this->redis()->expire($key, $retentionPeriod * 60 * 60 * 24);
     }
 
     public function acknowledge(string $topic, string $id): void
