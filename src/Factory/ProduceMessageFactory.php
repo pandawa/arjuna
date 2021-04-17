@@ -11,6 +11,7 @@ use InvalidArgumentException;
 use Pandawa\Arjuna\Broker\ProduceMessage;
 use Pandawa\Arjuna\Mapper\EventMapper;
 use Pandawa\Arjuna\Mapper\RegistryMapper;
+use Pandawa\Arjuna\Messaging\HasProduceKey;
 use Pandawa\Arjuna\Messaging\Message;
 use Pandawa\Arjuna\Messaging\SelfProduceMessage;
 use Pandawa\Component\Message\AbstractMessage;
@@ -91,7 +92,7 @@ final class ProduceMessageFactory
         $name = $message instanceof NameableMessageInterface ? $message::name() : get_class($message);
         $topic = $version ? sprintf('v%s.%s', $version, $mapper->getProduceTopic()) : $mapper->getProduceTopic();
 
-        if (null === $key = $this->getMessageValue($mapper->getProduceKey(), $message)) {
+        if (null === $key = $this->getMessageValue($this->getProduceKey($mapper), $message)) {
             throw new InvalidArgumentException(
                 sprintf('Attribute "%s" is not found in class "%s".', $key, get_class($message))
             );
@@ -241,5 +242,18 @@ final class ProduceMessageFactory
         }
 
         return get_class($message);
+    }
+
+    private function getProduceKey($mapper)
+    {
+        if ($mapper instanceof HasProduceKey) {
+            return $mapper->getProduceKey();
+        }
+
+        if ($mapper instanceof EventMapper) {
+            return $mapper->getProduceKey();
+        }
+
+        return Str::uuid()->toString();
     }
 }
