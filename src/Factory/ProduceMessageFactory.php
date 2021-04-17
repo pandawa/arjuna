@@ -92,7 +92,7 @@ final class ProduceMessageFactory
         $name = $message instanceof NameableMessageInterface ? $message::name() : get_class($message);
         $topic = $version ? sprintf('v%s.%s', $version, $mapper->getProduceTopic()) : $mapper->getProduceTopic();
 
-        if (null === $key = $this->getMessageValue($this->getProduceKey($mapper), $message)) {
+        if (null === $key = $this->getProduceKey($mapper, $message)) {
             throw new InvalidArgumentException(
                 sprintf('Attribute "%s" is not found in class "%s".', $key, get_class($message))
             );
@@ -244,14 +244,10 @@ final class ProduceMessageFactory
         return get_class($message);
     }
 
-    private function getProduceKey($mapper)
+    private function getProduceKey($mapper, AbstractMessage $message)
     {
-        if ($mapper instanceof HasProduceKey) {
-            return $mapper->getProduceKey();
-        }
-
-        if ($mapper instanceof EventMapper) {
-            return $mapper->getProduceKey();
+        if ($mapper instanceof HasProduceKey || $mapper instanceof EventMapper) {
+            return $this->getMessageValue($mapper->getProduceKey(), $message);
         }
 
         return Str::uuid()->toString();
