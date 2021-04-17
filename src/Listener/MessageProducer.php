@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Pandawa\Arjuna\Listener;
 
-use Exception;
 use Illuminate\Contracts\Bus\Dispatcher;
 use Illuminate\Contracts\Container\Container;
 use Pandawa\Arjuna\Broker\Broker;
@@ -12,7 +11,6 @@ use Pandawa\Arjuna\Broker\ProduceMessage;
 use Pandawa\Arjuna\Factory\ProduceMessageFactory;
 use Pandawa\Arjuna\Job\ProduceMessageJob;
 use Pandawa\Arjuna\Messaging\ProduceMessage as ProduceMessageContract;
-use Pandawa\Component\Message\AbstractMessage;
 
 /**
  * @author  Iqbal Maulana <iq.bluejack@gmail.com>
@@ -58,7 +56,7 @@ final class MessageProducer
     public function handle($eventName, $events): void
     {
         foreach ($events as $event) {
-            if ($event instanceof AbstractMessage && $event instanceof ProduceMessageContract) {
+            if ($event instanceof ProduceMessageContract) {
                 foreach ($this->factory->createFromMessage($event) as $message) {
                     $this->produce($message);
                 }

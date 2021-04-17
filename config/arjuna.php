@@ -10,10 +10,12 @@ return [
         'connection' => env('ARJUNA_PRODUCE_QUEUE_CONNECTION'),
     ],
 
+    'default_topic' => env('ARJUNA_DEFAULT_TOPIC', Str::snake(config('app.name'))),
+    'group'         => env('ARJUNA_GROUP', Str::snake(config('app.name'))),
+
     'drivers' => [
         'kafka' => [
             'brokers'          => env('KAFKA_BROKERS', '127.0.0.1'),
-            'group'            => env('KAFKA_GROUP', Str::snake(config('app.name'))),
             'compression_type' => env('KAFKA_COMPRESSION', 'snappy'),
             'autocommit'       => env('KAFKA_AUTOCOMMIT', false),
             'debug'            => env('KAFKA_DEBUG', false),
@@ -21,7 +23,6 @@ return [
 
         'redis' => [
             'connection'       => env('REDIS_BROKER_CONNECTION', 'default'),
-            'group'            => env('REDIS_BROKER_GROUP', Str::snake(config('app.name'))),
             'retention_period' => env('REDIS_BROKER_RETENTION_PERIOD', 7),
         ],
     ],

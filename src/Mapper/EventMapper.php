@@ -4,12 +4,13 @@ declare(strict_types=1);
 
 namespace Pandawa\Arjuna\Mapper;
 
-use Pandawa\Arjuna\Messaging\SelfProduceMessage;
+use Pandawa\Arjuna\Messaging\HasProduceKey;
+use Pandawa\Arjuna\Messaging\HasProduceTopic;
 
 /**
  * @author  Iqbal Maulana <iq.bluejack@gmail.com>
  */
-final class EventMapper implements SelfProduceMessage
+final class EventMapper implements HasProduceKey, HasProduceTopic
 {
     /**
      * @var string

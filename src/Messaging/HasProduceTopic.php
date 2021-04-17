@@ -7,7 +7,7 @@ namespace Pandawa\Arjuna\Messaging;
 /**
  * @author  Iqbal Maulana <iq.bluejack@gmail.com>
  */
-interface SelfProduceMessage extends ProduceMessage
+interface HasProduceTopic
 {
     public function getProduceTopic(): string;
 }

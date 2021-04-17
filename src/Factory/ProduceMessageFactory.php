@@ -12,11 +12,13 @@ use Pandawa\Arjuna\Broker\ProduceMessage;
 use Pandawa\Arjuna\Mapper\EventMapper;
 use Pandawa\Arjuna\Mapper\RegistryMapper;
 use Pandawa\Arjuna\Messaging\HasProduceKey;
+use Pandawa\Arjuna\Messaging\HasProduceTopic;
 use Pandawa\Arjuna\Messaging\Message;
-use Pandawa\Arjuna\Messaging\SelfProduceMessage;
 use Pandawa\Component\Message\AbstractMessage;
 use Pandawa\Component\Message\NameableMessageInterface;
 use Pandawa\Component\Transformer\TransformerRegistryInterface;
+use ReflectionObject;
+use ReflectionParameter;
 
 /**
  * @author  Iqbal Maulana <iq.bluejack@gmail.com>
@@ -48,19 +50,15 @@ final class ProduceMessageFactory
     /**
      * Create broker messages from domain message.
      *
-     * @param AbstractMessage $message
+     * @param mixed $message
      *
      * @return ProduceMessage[]
      * @throws Exception
      */
-    public function createFromMessage(AbstractMessage $message): array
+    public function createFromMessage($message): array
     {
         if (!$this->registry->has($eventName = $this->getEventName($message))) {
-            if ($message instanceof SelfProduceMessage) {
-                return [$this->createBrokerMessage(null, $message, $message)];
-            }
-
-            return [];
+            return [$this->createBrokerMessage(null, $message, $message)];
         }
 
         $mapper = $this->registry->get($eventName);
@@ -80,17 +78,17 @@ final class ProduceMessageFactory
     /**
      * Create message broker and transform the value.
      *
-     * @param string|null        $version
-     * @param SelfProduceMessage $mapper
-     * @param AbstractMessage    $message
+     * @param string|null $version
+     * @param mixed       $mapper
+     * @param mixed       $message
      *
      * @return ProduceMessage
      * @throws Exception
      */
-    private function createBrokerMessage($version, SelfProduceMessage $mapper, AbstractMessage $message): ProduceMessage
+    private function createBrokerMessage($version, $mapper, $message): ProduceMessage
     {
-        $name = $message instanceof NameableMessageInterface ? $message::name() : get_class($message);
-        $topic = $version ? sprintf('v%s.%s', $version, $mapper->getProduceTopic()) : $mapper->getProduceTopic();
+        $name = $this->getEventName($message);
+        $topic = $this->getProduceTopic($version, $mapper);
 
         if (null === $key = $this->getProduceKey($mapper, $message)) {
             throw new InvalidArgumentException(
@@ -113,13 +111,13 @@ final class ProduceMessageFactory
     /**
      * Transform message payload from event mapper and version.
      *
-     * @param string|null        $version
-     * @param SelfProduceMessage $mapper
-     * @param AbstractMessage    $message
+     * @param string|null $version
+     * @param mixed       $mapper
+     * @param mixed       $message
      *
      * @return array
      */
-    private function transformPayload($version, SelfProduceMessage $mapper, AbstractMessage $message): array
+    private function transformPayload($version, $mapper, $message): array
     {
         $data = [];
 
@@ -140,7 +138,7 @@ final class ProduceMessageFactory
                 Arr::set($data, $key, $this->getMessageValue($value['from'] ?? $key, $message));
             }
         } else {
-            foreach ($message->payload()->keys() as $key) {
+            foreach ($this->getMessageKeys($message) as $key) {
                 Arr::set($data, $key, $this->getMessageValue($key, $message));
             }
         }
@@ -175,12 +173,12 @@ final class ProduceMessageFactory
     /**
      * Get message value with segmented key support.
      *
-     * @param string          $key
-     * @param AbstractMessage $message
+     * @param string $key
+     * @param mixed  $message
      *
      * @return mixed|AbstractMessage|null
      */
-    private function getMessageValue(string $key, AbstractMessage $message)
+    private function getMessageValue(string $key, $message)
     {
         if (false === strpos($key, '.')) {
             return $this->getValue($key, $message);
@@ -199,6 +197,14 @@ final class ProduceMessageFactory
         return $value;
     }
 
+    /**
+     * Get value from data object.
+     *
+     * @param string $key
+     * @param        $data
+     *
+     * @return mixed|null
+     */
     private function getValue(string $key, $data)
     {
         if (is_object($data)) {
@@ -231,11 +237,11 @@ final class ProduceMessageFactory
     /**
      * Get event name from domain message.
      *
-     * @param AbstractMessage $message
+     * @param object $message
      *
      * @return string
      */
-    private function getEventName(AbstractMessage $message): string
+    private function getEventName($message): string
     {
         if ($message instanceof NameableMessageInterface) {
             return $message::name();
@@ -244,12 +250,55 @@ final class ProduceMessageFactory
         return get_class($message);
     }
 
-    private function getProduceKey($mapper, AbstractMessage $message)
+    private function getMessageKeys($message): array
+    {
+        if ($message instanceof AbstractMessage) {
+            return $message->payload()->keys();
+        }
+
+        $reflection = new ReflectionObject($message);
+
+        return array_values(array_map(
+            function (ReflectionParameter $param) {
+                return $param->getName();
+            },
+            $reflection->getConstructor()->getParameters()
+        ));
+    }
+
+    /**
+     * Get message produce key.
+     *
+     * @param $mapper
+     * @param $message
+     *
+     * @return mixed|string|null
+     */
+    private function getProduceKey($mapper, $message)
     {
         if ($mapper instanceof HasProduceKey || $mapper instanceof EventMapper) {
             return $this->getMessageValue($mapper->getProduceKey(), $message);
         }
 
         return Str::uuid()->toString();
+    }
+
+    /**
+     * Get message produce topic.
+     *
+     * @param $version
+     * @param $mapper
+     *
+     * @return string
+     */
+    private function getProduceTopic($version, $mapper): string
+    {
+        if ($mapper instanceof HasProduceTopic) {
+            $topic = $mapper->getProduceTopic();
+        } else {
+            $topic = config('arjuna.default_topic');
+        }
+
+        return $version ? sprintf('v%s.%s', $version, $topic) : $topic;
     }
 }

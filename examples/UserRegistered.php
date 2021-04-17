@@ -4,12 +4,12 @@ declare(strict_types=1);
 
 use Pandawa\Component\Message\AbstractMessage;
 use Pandawa\Component\Message\NameableMessageInterface;
-use Pandawa\Arjuna\Messaging\SelfProduceMessage;
+use Pandawa\Arjuna\Messaging\ProduceMessage;
 
 /**
  * @author  Iqbal Maulana <iq.bluejack@gmail.com>
  */
-class UserRegistered extends AbstractMessage implements NameableMessageInterface, SelfProduceMessage
+class UserRegistered extends AbstractMessage implements NameableMessageInterface, ProduceMessage
 {
     public static function name(): string
     {
@@ -28,15 +28,5 @@ class UserRegistered extends AbstractMessage implements NameableMessageInterface
     public function getPosition()
     {
         return 'programmer';
-    }
-
-    public function getProduceKey(): string
-    {
-        return 'person.id';
-    }
-
-    public function getProduceTopic(): string
-    {
-        return 'order';
     }
 }
