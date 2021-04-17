@@ -82,27 +82,38 @@ class ConsumeConsole extends Command
             $this->writeStatusForMessage($event->getMessage(), $event->getTopics(), 'Processing', 'comment');
         });
 
-        $this->laravel['events']->listen(MessageProcessed::class, function (MessageEvent $event) {
+        $this->laravel['events']->listen(MessageProcessed::class, function (MessageProcessed $event) {
             $this->writeStatusForMessage($event->getMessage(), $event->getTopics(), 'Processed', 'info');
         });
 
-        $this->laravel['events']->listen(MessageExceptionOccurred::class, function (MessageEvent $event) {
-            $this->writeStatusForMessage($event->getMessage(), $event->getTopics(), 'Failed', 'error');
+        $this->laravel['events']->listen(MessageExceptionOccurred::class, function (MessageExceptionOccurred $event) {
+            $this->writeStatusForMessage(
+                $event->getMessage(),
+                $event->getTopics(),
+                'Failed',
+                'error',
+                $event->getException()->getMessage()
+            );
         });
 
-        $this->laravel['events']->listen(WorkerPlaying::class, function (WorkerEvent $event) {
+        $this->laravel['events']->listen(WorkerPlaying::class, function (WorkerPlaying $event) {
             $this->writeStatusForWorker($event->getTopics(), 'Starting', 'info');
         });
 
         $this->laravel['events']->listen(ConnectionExceptionOccurred::class, function (ConnectionExceptionOccurred $event) {
-            $this->writeStatusForWorker($event->getTopics(), 'Failed', 'error');
+            $this->writeStatusForWorker(
+                $event->getTopics(),
+                'Failed',
+                'error',
+                $event->getException()->getMessage()
+            );
         });
 
-        $this->laravel['events']->listen(WorkerPaused::class, function (WorkerEvent $event) {
+        $this->laravel['events']->listen(WorkerPaused::class, function (WorkerPaused $event) {
             $this->writeStatusForWorker($event->getTopics(), 'Paused', 'comment');
         });
 
-        $this->laravel['events']->listen(WorkerResumed::class, function (WorkerEvent $event) {
+        $this->laravel['events']->listen(WorkerResumed::class, function (WorkerResumed $event) {
             $this->writeStatusForWorker($event->getTopics(), 'Resume', 'comment');
         });
 
@@ -115,28 +126,30 @@ class ConsumeConsole extends Command
         });
     }
 
-    protected function writeStatusForMessage(Message $message, array $topics, string $status, string $type): void
+    protected function writeStatusForMessage(Message $message, array $topics, string $status, string $type, string $reason = ''): void
     {
         $this->output->writeln(
             sprintf(
-                "<{$type}>[%s][%s] %s</{$type}> %s for %s",
+                "<{$type}>[%s][%s] %s %s</{$type}> %s for %s",
                 Carbon::now()->format('Y-m-d H:i:s'),
                 $message->messageId(),
                 str_pad("{$status}", 11),
                 $message->messageName(),
-                implode(',', $topics)
+                implode(',', $topics),
+                $reason ? '- ' . $reason : ''
             )
         );
     }
 
-    protected function writeStatusForWorker(array $topics, string $status, string $type): void
+    protected function writeStatusForWorker(array $topics, string $status, string $type, string $message = ''): void
     {
         $this->output->writeln(
             sprintf(
-                "<{$type}>[%s] %s %s</{$type}>",
+                "<{$type}>[%s] %s %s %s</{$type}>",
                 Carbon::now()->format('Y-m-d H:i:s'),
                 str_pad("{$status}:", 11),
-                implode(',', $topics)
+                implode(',', $topics),
+                $message ? '- ' . $message : ''
             )
         );
     }
