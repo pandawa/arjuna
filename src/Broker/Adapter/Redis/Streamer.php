@@ -7,6 +7,7 @@ namespace Pandawa\Arjuna\Broker\Adapter\Redis;
 use Illuminate\Redis\Connections\Connection;
 use Illuminate\Redis\Connections\PhpRedisConnection;
 use Illuminate\Support\Facades\Redis;
+use RuntimeException;
 
 /**
  * @author  Iqbal Maulana <iq.bluejack@gmail.com>
@@ -55,7 +56,11 @@ class Streamer
 
     public function await(string $consumer, array $streams, int $timeout = 0): ?array
     {
-        return $this->redis()->xReadGroup($this->group, $consumer, $streams, null, $timeout);
+        if (false === $message = $this->redis()->xReadGroup($this->group, $consumer, $streams, null, $timeout)) {
+            throw new RuntimeException('disconnected');
+        }
+
+        return $message;
     }
 
     public function groups(string $topic): array
@@ -109,7 +114,6 @@ class Streamer
         }
 
         $this->redis = Redis::connection($this->connection);
-        $this->redis->setOption(\Redis::OPT_PREFIX, '');
 
         return $this->redis;
     }

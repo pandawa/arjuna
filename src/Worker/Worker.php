@@ -17,7 +17,7 @@ use Pandawa\Arjuna\Event\MessageProcessing;
 use Pandawa\Arjuna\Job\ProcessConsumedMessageJob;
 use Pandawa\Arjuna\Messaging\Message;
 use Illuminate\Support\Str;
-use Symfony\Component\Debug\Exception\FatalThrowableError;
+use RuntimeException;
 use Throwable;
 
 /**
@@ -74,6 +74,12 @@ class Worker
         $this->event->dispatch(new MessageProcessing($options->getBroker(), $message, $options->getTopics()));
 
         try {
+            if (null === $options->getQueue()) {
+                $this->dispatcher->dispatchNow(new ProcessConsumedMessageJob($message->toArray(), $options));
+
+                return;
+            }
+
             $this->dispatcher->dispatch(
                 (new ProcessConsumedMessageJob($message->toArray(), $options))
                     ->onQueue($options->getQueue())
@@ -100,7 +106,7 @@ class Worker
 
             throw $e;
         } catch (Throwable $e) {
-            $this->exceptions->report($e = new FatalThrowableError($e));
+            $this->exceptions->report($e = new RuntimeException($e->getMessage(), $e->getCode(), $e));
 
             throw $e;
         }
