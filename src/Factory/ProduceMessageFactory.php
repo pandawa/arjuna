@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Pandawa\Arjuna\Factory;
 
 use Exception;
+use Illuminate\Contracts\Support\Arrayable;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Str;
 use InvalidArgumentException;
@@ -14,11 +15,14 @@ use Pandawa\Arjuna\Mapper\RegistryMapper;
 use Pandawa\Arjuna\Messaging\HasProduceKey;
 use Pandawa\Arjuna\Messaging\HasProduceTopic;
 use Pandawa\Arjuna\Messaging\Message;
+use Pandawa\Arjuna\Messaging\ProduceMessage as ProduceMessageContract;
 use Pandawa\Component\Message\AbstractMessage;
 use Pandawa\Component\Message\NameableMessageInterface;
 use Pandawa\Component\Transformer\TransformerRegistryInterface;
+use ReflectionException;
 use ReflectionObject;
 use ReflectionParameter;
+use ReflectionProperty;
 
 /**
  * @author  Iqbal Maulana <iq.bluejack@gmail.com>
@@ -58,7 +62,11 @@ final class ProduceMessageFactory
     public function createFromMessage($message): array
     {
         if (!$this->registry->has($eventName = $this->getEventName($message))) {
-            return [$this->createBrokerMessage(null, $message, $message)];
+            if ($message instanceof ProduceMessageContract) {
+                return [$this->createBrokerMessage(null, $message, $message)];
+            }
+
+            return [];
         }
 
         $mapper = $this->registry->get($eventName);
@@ -119,10 +127,8 @@ final class ProduceMessageFactory
      */
     private function transformPayload($version, $mapper, $message): array
     {
-        $data = [];
-
-        if ($mapper instanceof EventMapper) {
-            $mapping = $mapper->getAttributes();
+        if ($mapper instanceof EventMapper && !empty($mapping = $mapper->getAttributes())) {
+            $data = [];
 
             foreach ($mapping as $key => $value) {
                 if (is_numeric($key)) {
@@ -137,13 +143,11 @@ final class ProduceMessageFactory
 
                 Arr::set($data, $key, $this->getMessageValue($value['from'] ?? $key, $message));
             }
-        } else {
-            foreach ($this->getMessageKeys($message) as $key) {
-                Arr::set($data, $key, $this->getMessageValue($key, $message));
-            }
+
+            return $data;
         }
 
-        return $data;
+        return $this->serializeMessage($message);
     }
 
     /**
@@ -237,7 +241,7 @@ final class ProduceMessageFactory
     /**
      * Get event name from domain message.
      *
-     * @param object $message
+     * @param mixed $message
      *
      * @return string
      */
@@ -250,6 +254,13 @@ final class ProduceMessageFactory
         return get_class($message);
     }
 
+    /**
+     * Get message keys.
+     *
+     * @param mixed $message
+     *
+     * @return array
+     */
     private function getMessageKeys($message): array
     {
         if ($message instanceof AbstractMessage) {
@@ -276,8 +287,9 @@ final class ProduceMessageFactory
      */
     private function getProduceKey($mapper, $message)
     {
-        if ($mapper instanceof HasProduceKey || $mapper instanceof EventMapper) {
-            return $this->getMessageValue($mapper->getProduceKey(), $message);
+        if (($mapper instanceof HasProduceKey || $mapper instanceof EventMapper)
+            && null !== $produceKey = $mapper->getProduceKey()) {
+            return $this->getMessageValue($produceKey, $message);
         }
 
         return Str::uuid()->toString();
@@ -293,12 +305,88 @@ final class ProduceMessageFactory
      */
     private function getProduceTopic($version, $mapper): string
     {
-        if ($mapper instanceof HasProduceTopic) {
-            $topic = $mapper->getProduceTopic();
+        if ($mapper instanceof HasProduceTopic && null !== $productTopic = $mapper->getProduceTopic()) {
+            $topic = $productTopic;
         } else {
             $topic = config('arjuna.default_topic');
         }
 
         return $version ? sprintf('v%s.%s', $version, $topic) : $topic;
+    }
+
+    /**
+     * Serialize message to array.
+     *
+     * @param mixed $message
+     *
+     * @return array
+     * @throws ReflectionException
+     */
+    private function serializeMessage($message): array
+    {
+        if ($message instanceof Arrayable) {
+            return $message->toArray();
+        }
+
+        if ($message instanceof AbstractMessage) {
+            return $message->payload()->all();
+        }
+
+        $serialized = [];
+        $reflectionObject = new ReflectionObject($message);
+
+        foreach ($this->getMessageKeys($message) as $key) {
+            if (null !== $prop = $reflectionObject->getProperty($key)) {
+                $serialized[$key] = $this->serializeValue($this->getPropertyValue($prop, $message));
+
+                continue;
+            }
+
+            $serialized[$key] = null;
+        }
+
+        return $serialized;
+    }
+
+    /**
+     * Get object property value.
+     *
+     * @param ReflectionProperty $property
+     * @param object             $object
+     *
+     * @return mixed
+     */
+    private function getPropertyValue(ReflectionProperty $property, object $object)
+    {
+        $property->setAccessible(true);
+
+        return $property->getValue($object);
+    }
+
+    /**
+     * Serialize value.
+     *
+     * @param mixed $value
+     *
+     * @return array|bool|float|int|mixed|string
+     */
+    private function serializeValue($value)
+    {
+        if (is_scalar($value)) {
+            return $value;
+        }
+
+        if (is_array($value)) {
+            $serialized = [];
+            foreach ($value as $key => $item) {
+                $serialized[$key] = $this->serializeValue($item);
+            }
+
+            return $serialized;
+        }
+
+        return [
+            '__serialize' => serialize($value),
+        ];
     }
 }

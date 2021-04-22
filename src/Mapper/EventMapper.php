@@ -41,10 +41,10 @@ final class EventMapper implements HasProduceKey, HasProduceTopic
     {
         $mapper = new static();
         $mapper->eventName = $data['event_name'];
-        $mapper->produceTopic = $data['produce_topic'];
-        $mapper->produceKey = $data['produce_key'];
-        $mapper->availableVersions = $data['available_versions'];
-        $mapper->attributes = $data['attributes'];
+        $mapper->produceTopic = $data['produce_topic'] ?? null;
+        $mapper->produceKey = $data['produce_key'] ?? null;
+        $mapper->availableVersions = $data['available_versions'] ?? [];
+        $mapper->attributes = $data['attributes'] ?? [];
 
         return $mapper;
     }
@@ -60,7 +60,7 @@ final class EventMapper implements HasProduceKey, HasProduceTopic
     /**
      * @return string
      */
-    public function getProduceTopic(): string
+    public function getProduceTopic(): ?string
     {
         return $this->produceTopic;
     }
@@ -68,7 +68,7 @@ final class EventMapper implements HasProduceKey, HasProduceTopic
     /**
      * @return string
      */
-    public function getProduceKey(): string
+    public function getProduceKey(): ?string
     {
         return $this->produceKey;
     }

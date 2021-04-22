@@ -9,5 +9,5 @@ namespace Pandawa\Arjuna\Messaging;
  */
 interface HasProduceTopic
 {
-    public function getProduceTopic(): string;
+    public function getProduceTopic(): ?string;
 }

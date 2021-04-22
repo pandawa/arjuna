@@ -18,7 +18,7 @@ trait ArjunaProviderTrait
 {
     protected $arjunaPath = 'Resources/arjuna';
 
-    protected function bootArjunaProvider(): void
+    protected function registerArjunaProvider(): void
     {
         if (file_exists($this->app->getCachedConfigPath())) {
             return;
@@ -34,8 +34,8 @@ trait ArjunaProviderTrait
         if (is_dir($basePath)) {
             /** @var SplFileInfo $file */
             foreach (Finder::create()->in($basePath) as $file) {
-                foreach ($loader->load((string) $file) as $name => $eventMapper) {
-                    $this->mergeConfig('arjuna.event_mappers', [$name => $eventMapper]);
+                if (!empty($mappers = $loader->load((string) $file))) {
+                    $this->mergeConfig('arjuna.event_mappers', $mappers);
                 }
             }
         }

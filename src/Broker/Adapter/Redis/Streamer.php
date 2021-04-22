@@ -115,6 +115,16 @@ class Streamer
 
         $this->redis = Redis::connection($this->connection);
 
+        $client = $this->redis->client();
+
+        if ($client instanceof \Predis\Client) {
+            throw new RuntimeException('Predis driver is not supported, please use phpredis driver instead.');
+        }
+
+        if ($client instanceof \Redis) {
+            $this->redis->setOption(\Redis::OPT_READ_TIMEOUT, -1);
+        }
+
         return $this->redis;
     }
 }

@@ -62,7 +62,7 @@ final class KafkaBrokerAdapter implements Broker
         return 'kafka';
     }
 
-    public function send(string $topic, string $key, ProduceMessage $message): void
+    public function send(string $topic, $key, ProduceMessage $message): void
     {
         $topic = $this->producer()->newTopic($topic);
 

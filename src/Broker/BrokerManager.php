@@ -52,10 +52,10 @@ final class BrokerManager implements Broker
      * Send domain message to broker.
      *
      * @param string         $topic
-     * @param string         $key
+     * @param string|int     $key
      * @param ProduceMessage $message
      */
-    public function send(string $topic, string $key, ProduceMessage $message): void
+    public function send(string $topic, $key, ProduceMessage $message): void
     {
         $this->driver()->send($topic, $key, $message);
     }

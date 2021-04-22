@@ -9,5 +9,5 @@ namespace Pandawa\Arjuna\Messaging;
  */
 interface HasProduceKey
 {
-    public function getProduceKey(): string;
+    public function getProduceKey(): ?string;
 }

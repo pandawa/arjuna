@@ -35,9 +35,11 @@ final class RedisBrokerAdapter implements Broker
         $this->retentionPeriod = $retentionPeriod;
     }
 
-    public function send(string $topic, string $key, ProduceMessage $message): void
+    public function send(string $topic, $key, ProduceMessage $message): void
     {
-        $this->redis->add($topic, '*', $this->encodeMessage($message), $this->retentionPeriod);
+        $key = is_int($key) ? $key : '*';
+
+        $this->redis->add($topic, $key, $this->encodeMessage($message), $this->retentionPeriod);
     }
 
     public function consumer(): Consumer

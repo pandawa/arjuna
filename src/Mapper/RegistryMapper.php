@@ -13,7 +13,15 @@ class RegistryMapper
 
     public function __construct(array $mappers = [])
     {
-        $this->mappers = $mappers;
+        foreach ($mappers as $event => $option) {
+            if (is_int($event)) {
+                $this->add($option, []);
+
+                continue;
+            }
+
+            $this->add($event, $option);
+        }
     }
 
     public function has(string $eventName): bool

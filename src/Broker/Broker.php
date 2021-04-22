@@ -9,7 +9,7 @@ namespace Pandawa\Arjuna\Broker;
  */
 interface Broker
 {
-    public function send(string $topic, string $key, ProduceMessage $message): void;
+    public function send(string $topic, $key, ProduceMessage $message): void;
 
     public function consumer(): Consumer;
 
