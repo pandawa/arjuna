@@ -22,3 +22,7 @@ Pandawa\Arjuna\Broker\Adapter\Redis\RedisBrokerAdapter:
         - '%arjuna.drivers.redis.connection%'
         - '%arjuna.group%'
         - '%arjuna.drivers.redis.retention_period%'
+
+Pandawa\Arjuna\Broker\Adapter\Log\LogBrokerAdapter:
+    class: Pandawa\Arjuna\Broker\Adapter\Log\LogBrokerAdapter
+    tag: arjunaBroker

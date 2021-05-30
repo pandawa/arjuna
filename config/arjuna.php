@@ -3,7 +3,7 @@
 use Illuminate\Support\Str;
 
 return [
-    'default' => env('ARJUNA_BROKER', 'kafka'),
+    'default' => env('ARJUNA_BROKER', 'log'),
 
     'produce' => [
         'queue'      => env('ARJUNA_PRODUCE_QUEUE', false),
