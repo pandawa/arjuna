@@ -56,8 +56,10 @@ final class MessageProducer
     public function handle($eventName, $events): void
     {
         foreach ($events as $event) {
-            foreach ($this->factory->createFromMessage($event) as $message) {
-                $this->produce($message);
+            if (null !== $event) {
+                foreach ($this->factory->createFromMessage($event) as $message) {
+                    $this->produce($message);
+                }
             }
         }
     }
