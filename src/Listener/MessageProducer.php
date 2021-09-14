@@ -56,7 +56,7 @@ final class MessageProducer
     public function handle($eventName, $events): void
     {
         foreach ($events as $event) {
-            if (null === $event) {
+            if (!is_object($event)) {
                 continue;
             }
 
