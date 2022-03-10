@@ -142,5 +142,7 @@ final class KafkaBrokerAdapter implements Broker
             $this->options['autocommit'],
             $this->options['debug']
         );
+
+        return $this->config;
     }
 }
