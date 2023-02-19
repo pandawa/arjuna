@@ -13,35 +13,19 @@ use Pandawa\Arjuna\Broker\Consumer;
  */
 final class RedisConsumerAdapter implements Consumer
 {
-    /**
-     * @var Streamer;
-     */
-    private $redis;
+    private array $topics = [];
 
-    /**
-     * @var string
-     */
-    private $group;
-
-    /**
-     * @var array
-     */
-    private $topics = [];
-
-    /**
-     * @var array
-     */
-    private $lastSeenIds = [];
+    private array $lastSeenIds = [];
 
     /**
      * @var ConsumedMessage[]
      */
-    private $pending = [];
+    private array $pending = [];
 
-    public function __construct(Streamer $redis, string $group)
-    {
-        $this->redis = $redis;
-        $this->group = $group;
+    public function __construct(
+        private readonly Streamer $redis,
+        private readonly string $group
+    ) {
     }
 
     public function subscribe(array $topics): void

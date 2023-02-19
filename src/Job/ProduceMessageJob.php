@@ -6,24 +6,21 @@ namespace Pandawa\Arjuna\Job;
 
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
-use Pandawa\Arjuna\Broker\Broker;
+use Pandawa\Arjuna\Broker\BrokerInterface;
 use Pandawa\Arjuna\Broker\ProduceMessage;
 
 /**
  * @author  Iqbal Maulana <iq.bluejack@gmail.com>
  */
-class ProduceMessageJob implements ShouldQueue
+final class ProduceMessageJob implements ShouldQueue
 {
     use Queueable;
 
-    private $message;
-
-    public function __construct(ProduceMessage $message)
+    public function __construct(private readonly ProduceMessage $message)
     {
-        $this->message = $message;
     }
 
-    public function handle(Broker $broker): void
+    public function handle(BrokerInterface $broker): void
     {
         $broker->send($this->message->getProduceTopic(), $this->message->getProduceKey(), $this->message);
     }

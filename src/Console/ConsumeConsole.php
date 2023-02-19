@@ -6,11 +6,13 @@ namespace Pandawa\Arjuna\Console;
 
 use Illuminate\Console\Command;
 use Illuminate\Support\Carbon;
+use Pandawa\Annotations\Console\AsConsole;
 use Pandawa\Arjuna\Event\ConnectionExceptionOccurred;
 use Pandawa\Arjuna\Event\MessageEvent;
 use Pandawa\Arjuna\Event\MessageExceptionOccurred;
 use Pandawa\Arjuna\Event\MessageProcessed;
 use Pandawa\Arjuna\Event\MessageProcessing;
+use Pandawa\Arjuna\Event\MessagePushedToQueue;
 use Pandawa\Arjuna\Event\WorkerEvent;
 use Pandawa\Arjuna\Event\WorkerPaused;
 use Pandawa\Arjuna\Event\WorkerPlaying;
@@ -20,10 +22,12 @@ use Pandawa\Arjuna\Event\WorkerStopped;
 use Pandawa\Arjuna\Messaging\Message;
 use Pandawa\Arjuna\Worker\Worker;
 use Pandawa\Arjuna\Worker\WorkerOptions;
+use Pandawa\Contracts\Event\EventBusInterface;
 
 /**
  * @author  Iqbal Maulana <iq.bluejack@gmail.com>
  */
+#[AsConsole]
 class ConsumeConsole extends Command
 {
     /**
@@ -42,20 +46,15 @@ class ConsumeConsole extends Command
     protected $description = 'Start consuming message as a daemon';
 
     /**
-     * @var Worker
-     */
-    protected $worker;
-
-    /**
      * Constructor.
      *
      * @param Worker $worker
      */
-    public function __construct(Worker $worker)
-    {
+    public function __construct(
+        protected readonly Worker $worker,
+        protected readonly EventBusInterface $eventBus,
+    ) {
         parent::__construct();
-
-        $this->worker = $worker;
     }
 
     public function handle(): void
@@ -65,12 +64,12 @@ class ConsumeConsole extends Command
         $this->worker->run($this->gatherWorkerOptions());
     }
 
-    protected function gatherWorkerOptions()
+    protected function gatherWorkerOptions(): WorkerOptions
     {
         return new WorkerOptions(
             explode(',', $this->argument('topics')),
             (int) $this->option('timeout'),
-            $this->option('broker'),
+            $this->option('broker') ?? config('arjuna.default'),
             $this->option('queue'),
             $this->option('connection')
         );
@@ -78,51 +77,55 @@ class ConsumeConsole extends Command
 
     protected function listenForEvents(): void
     {
-        $this->laravel['events']->listen(MessageProcessing::class, function (MessageEvent $event) {
-            $this->writeStatusForMessage($event->getMessage(), $event->getTopics(), 'Processing', 'comment');
+        $this->eventBus->listen(MessageProcessing::class, function (MessageEvent $event) {
+            $this->writeStatusForMessage($event->message, $event->topics, 'Processing', 'comment');
         });
 
-        $this->laravel['events']->listen(MessageProcessed::class, function (MessageProcessed $event) {
-            $this->writeStatusForMessage($event->getMessage(), $event->getTopics(), 'Processed', 'info');
+        $this->eventBus->listen(MessageProcessed::class, function (MessageProcessed $event) {
+            $this->writeStatusForMessage($event->message, $event->topics, 'Processed', 'info');
         });
 
-        $this->laravel['events']->listen(MessageExceptionOccurred::class, function (MessageExceptionOccurred $event) {
+        $this->eventBus->listen(MessagePushedToQueue::class, function (MessagePushedToQueue $event) {
+            $this->writeStatusForMessage($event->message, $event->topics, 'Queued', 'info');
+        });
+
+        $this->eventBus->listen(MessageExceptionOccurred::class, function (MessageExceptionOccurred $event) {
             $this->writeStatusForMessage(
-                $event->getMessage(),
-                $event->getTopics(),
+                $event->message,
+                $event->topics,
                 'Failed',
                 'error',
-                $event->getException()->getMessage()
+                $event->exception->getMessage()
             );
         });
 
-        $this->laravel['events']->listen(WorkerPlaying::class, function (WorkerPlaying $event) {
-            $this->writeStatusForWorker($event->getTopics(), 'Starting', 'info');
+        $this->eventBus->listen(WorkerPlaying::class, function (WorkerPlaying $event) {
+            $this->writeStatusForWorker($event->topics, 'Starting', 'info');
         });
 
-        $this->laravel['events']->listen(ConnectionExceptionOccurred::class, function (ConnectionExceptionOccurred $event) {
+        $this->eventBus->listen(ConnectionExceptionOccurred::class, function (ConnectionExceptionOccurred $event) {
             $this->writeStatusForWorker(
-                $event->getTopics(),
+                $event->topics,
                 'Failed',
                 'error',
-                $event->getException()->getMessage()
+                $event->exception->getMessage()
             );
         });
 
-        $this->laravel['events']->listen(WorkerPaused::class, function (WorkerPaused $event) {
-            $this->writeStatusForWorker($event->getTopics(), 'Paused', 'comment');
+        $this->eventBus->listen(WorkerPaused::class, function (WorkerPaused $event) {
+            $this->writeStatusForWorker($event->topics, 'Paused', 'comment');
         });
 
-        $this->laravel['events']->listen(WorkerResumed::class, function (WorkerResumed $event) {
-            $this->writeStatusForWorker($event->getTopics(), 'Resume', 'comment');
+        $this->eventBus->listen(WorkerResumed::class, function (WorkerResumed $event) {
+            $this->writeStatusForWorker($event->topics, 'Resume', 'comment');
         });
 
-        $this->laravel['events']->listen(WorkerStopped::class, function (WorkerEvent $event) {
-            $this->writeStatusForWorker($event->getTopics(), 'Stopped', 'error');
+        $this->eventBus->listen(WorkerStopped::class, function (WorkerEvent $event) {
+            $this->writeStatusForWorker($event->topics, 'Stopped', 'error');
         });
 
-        $this->laravel['events']->listen(WorkerQuit::class, function (WorkerEvent $event) {
-            $this->writeStatusForWorker($event->getTopics(), 'Quit', 'error');
+        $this->eventBus->listen(WorkerQuit::class, function (WorkerEvent $event) {
+            $this->writeStatusForWorker($event->topics, 'Quit', 'error');
         });
     }
 
@@ -130,13 +133,13 @@ class ConsumeConsole extends Command
     {
         $this->output->writeln(
             sprintf(
-                "<{$type}>[%s][%s] %s %s</{$type}> %s for %s",
+                "<{$type}>[%s][%s] %s %s</{$type}> %s %s",
                 Carbon::now()->format('Y-m-d H:i:s'),
                 $message->messageId(),
                 str_pad("{$status}", 11),
                 $message->messageName(),
                 implode(',', $topics),
-                $reason ? '- ' . $reason : ''
+                $reason ? '- for ' . $reason : ''
             )
         );
     }

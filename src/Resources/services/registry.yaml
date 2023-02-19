@@ -1,4 +1,0 @@
-Pandawa\Arjuna\Mapper\RegistryMapper:
-    class: Pandawa\Arjuna\Mapper\RegistryMapper
-    arguments:
-        - "%arjuna.event_mappers%"

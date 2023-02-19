@@ -9,41 +9,9 @@ namespace Pandawa\Arjuna\Event;
  */
 abstract class WorkerEvent
 {
-    /**
-     * @var string
-     */
-    protected $brokerName;
-
-    /**
-     * @var array
-     */
-    protected $topics;
-
-    /**
-     * Constructor.
-     *
-     * @param string $brokerName
-     * @param array  $topics
-     */
-    public function __construct(string $brokerName, array $topics)
-    {
-        $this->brokerName = $brokerName;
-        $this->topics = $topics;
-    }
-
-    /**
-     * @return string
-     */
-    public function getBrokerName(): string
-    {
-        return $this->brokerName;
-    }
-
-    /**
-     * @return array
-     */
-    public function getTopics(): array
-    {
-        return $this->topics;
+    public function __construct(
+        public readonly string $brokerName,
+        public readonly array $topics
+    ) {
     }
 }

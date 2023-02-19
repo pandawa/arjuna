@@ -2,11 +2,12 @@
 
 declare(strict_types=1);
 
-namespace Pandawa\Arjuna\Messaging;
+namespace Pandawa\Arjuna\Event;
 
 /**
  * @author  Iqbal Maulana <iq.bluejack@gmail.com>
  */
-interface ProduceMessage
+class MessagePushedToQueue extends MessageEvent
 {
+
 }

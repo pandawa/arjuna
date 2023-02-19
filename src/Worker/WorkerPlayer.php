@@ -4,35 +4,32 @@ declare(strict_types=1);
 
 namespace Pandawa\Arjuna\Worker;
 
-use Illuminate\Contracts\Events\Dispatcher;
 use Pandawa\Arjuna\Event\WorkerPaused;
 use Pandawa\Arjuna\Event\WorkerPlaying;
 use Pandawa\Arjuna\Event\WorkerQuit;
 use Pandawa\Arjuna\Event\WorkerResumed;
 use Pandawa\Arjuna\Event\WorkerStopped;
+use Pandawa\Contracts\Event\EventBusInterface;
 
 /**
  * @author  Iqbal Maulana <iq.bluejack@gmail.com>
  */
 class WorkerPlayer
 {
-    protected $shouldQuit = false;
-    protected $paused = false;
-    protected $event;
-    protected $process;
-    protected $options;
+    protected bool $shouldQuit = false;
+
+    protected bool $paused = false;
 
     /**
-     * Constructor.
-     *
-     * @param Dispatcher    $event
-     * @param WorkerOptions $options
-     * @param callable      $process
+     * @var callable
      */
-    public function __construct(Dispatcher $event, WorkerOptions $options, callable $process)
-    {
-        $this->event = $event;
-        $this->options = $options;
+    protected $process;
+
+    public function __construct(
+        protected readonly EventBusInterface $eventBus,
+        protected readonly WorkerOptions $options,
+        callable $process
+    ) {
         $this->process = $process;
     }
 
@@ -42,7 +39,7 @@ class WorkerPlayer
             $this->listenForSignals();
         }
 
-        $this->event->dispatch(new WorkerPlaying($this->options->getBroker(), $this->options->getTopics()));
+        $this->eventBus->fire(new WorkerPlaying($this->options->broker, $this->options->topics));
 
         while(true) {
             if ($this->paused) {
@@ -70,26 +67,26 @@ class WorkerPlayer
     {
         $this->paused = true;
 
-        $this->event->dispatch(new WorkerPaused($this->options->getBroker(), $this->options->getTopics()));
+        $this->eventBus->fire(new WorkerPaused($this->options->broker, $this->options->topics));
     }
 
     public function resume(): void
     {
         $this->paused = false;
 
-        $this->event->dispatch(new WorkerResumed($this->options->getBroker(), $this->options->getTopics()));
+        $this->eventBus->fire(new WorkerResumed($this->options->broker, $this->options->topics));
     }
 
     public function stop(): void
     {
         $this->shouldQuit = true;
 
-        $this->event->dispatch(new WorkerStopped($this->options->getBroker(), $this->options->getTopics()));
+        $this->eventBus->fire(new WorkerStopped($this->options->broker, $this->options->topics));
     }
 
     public function quit(int $status = 0): void
     {
-        $this->event->dispatch(new WorkerQuit($this->options->getBroker(), $this->options->getTopics()));
+        $this->eventBus->fire(new WorkerQuit($this->options->broker, $this->options->topics));
         exit($status);
     }
 

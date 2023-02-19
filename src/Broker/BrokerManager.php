@@ -5,32 +5,33 @@ declare(strict_types=1);
 namespace Pandawa\Arjuna\Broker;
 
 use Illuminate\Contracts\Container\Container;
+use Pandawa\Annotations\DependencyInjection\Inject;
+use Pandawa\Annotations\DependencyInjection\Injectable;
+use Pandawa\Annotations\DependencyInjection\Type;
 
 /**
  * @author  Iqbal Maulana <iq.bluejack@gmail.com>
  */
-final class BrokerManager implements Broker
+#[Injectable(alias: BrokerInterface::class)]
+final class BrokerManager implements BrokerInterface
 {
     /**
-     * @var Broker[]
+     * @var BrokerInterface[]
      */
-    private $brokers = [];
-
-    /**
-     * @var Container
-     */
-    private $container;
+    private array $brokers = [];
 
     /**
      * Constructor.
      *
      * @param Container $container
-     * @param Broker[]  $brokers
+     * @param BrokerInterface[]  $brokers
      */
-    public function __construct(Container $container, $brokers = [])
-    {
-        $this->container = $container;
-
+    public function __construct(
+        #[Inject(Type::SERVICE, 'app')]
+        private readonly Container $container,
+        #[Inject(Type::TAG, 'arjunaBroker')]
+        iterable $brokers = []
+    ) {
         if ($brokers) {
             foreach ($brokers as $broker) {
                 $this->extend($broker);
@@ -41,9 +42,9 @@ final class BrokerManager implements Broker
     /**
      * Add a broker to manager.
      *
-     * @param Broker $broker
+     * @param BrokerInterface $broker
      */
-    public function extend(Broker $broker): void
+    public function extend(BrokerInterface $broker): void
     {
         $this->brokers[$broker->name()] = $broker;
     }
@@ -75,9 +76,9 @@ final class BrokerManager implements Broker
      *
      * @param string|null $driver
      *
-     * @return Broker
+     * @return BrokerInterface
      */
-    public function driver(string $driver = null): Broker
+    public function driver(string $driver = null): BrokerInterface
     {
         return $this->brokers[$driver ?? $this->getDefaultDriver()];
     }

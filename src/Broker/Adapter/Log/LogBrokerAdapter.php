@@ -4,14 +4,16 @@ declare(strict_types=1);
 
 namespace Pandawa\Arjuna\Broker\Adapter\Log;
 
-use Pandawa\Arjuna\Broker\Broker;
+use Pandawa\Annotations\DependencyInjection\Injectable;
+use Pandawa\Arjuna\Broker\BrokerInterface;
 use Pandawa\Arjuna\Broker\Consumer;
 use Pandawa\Arjuna\Broker\ProduceMessage;
 
 /**
  * @author  Iqbal Maulana <iq.bluejack@gmail.com>
  */
-class LogBrokerAdapter implements Broker
+#[Injectable(tag: 'arjunaBroker')]
+class LogBrokerAdapter implements BrokerInterface
 {
     public function send(string $topic, $key, ProduceMessage $message): void
     {

@@ -9,47 +9,12 @@ use Exception;
 /**
  * @author  Iqbal Maulana <iq.bluejack@gmail.com>
  */
-final class ConnectionExceptionOccurred
+class ConnectionExceptionOccurred
 {
-    private $brokerName;
-    private $exception;
-    private $topics;
-
-    /**
-     * Constructor.
-     *
-     * @param string    $brokerName
-     * @param array     $topics
-     * @param Exception $exception
-     */
-    public function __construct(string $brokerName, array $topics, Exception $exception)
-    {
-        $this->brokerName = $brokerName;
-        $this->topics = $topics;
-        $this->exception = $exception;
-    }
-
-    /**
-     * @return string
-     */
-    public function getBrokerName(): string
-    {
-        return $this->brokerName;
-    }
-
-    /**
-     * @return array
-     */
-    public function getTopics(): array
-    {
-        return $this->topics;
-    }
-
-    /**
-     * @return Exception
-     */
-    public function getException(): Exception
-    {
-        return $this->exception;
+    public function __construct(
+        public readonly string $brokerName,
+        public readonly array $topics,
+        public readonly Exception $exception
+    ) {
     }
 }

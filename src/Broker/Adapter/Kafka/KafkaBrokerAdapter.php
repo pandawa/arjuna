@@ -4,7 +4,10 @@ declare(strict_types=1);
 
 namespace Pandawa\Arjuna\Broker\Adapter\Kafka;
 
-use Pandawa\Arjuna\Broker\Broker;
+use Pandawa\Annotations\DependencyInjection\Inject;
+use Pandawa\Annotations\DependencyInjection\Injectable;
+use Pandawa\Annotations\DependencyInjection\Type;
+use Pandawa\Arjuna\Broker\BrokerInterface;
 use Pandawa\Arjuna\Broker\Consumer;
 use Pandawa\Arjuna\Broker\ProduceMessage;
 use Pandawa\Arjuna\Messaging\Message;
@@ -15,45 +18,44 @@ use RuntimeException;
 /**
  * @author  Iqbal Maulana <iq.bluejack@gmail.com>
  */
-final class KafkaBrokerAdapter implements Broker
+#[Injectable(tag: 'arjunaBroker')]
+final class KafkaBrokerAdapter implements BrokerInterface
 {
-    /**
-     * @var Producer
-     */
-    private $producer;
+    private Producer $producer;
 
-    /**
-     * @var KafkaConsumerAdapter
-     */
-    private $consumer;
+    private KafkaConsumerAdapter $consumer;
 
-    /**
-     * @var Conf
-     */
-    private $config;
+    private Conf $config;
 
-    /**
-     * @var array
-     */
-    private $options = [];
+    private array $options = [];
 
     /**
      * Constructor.
      *
-     * @param string $brokers
-     * @param string $group
-     * @param string $compressionType
-     * @param bool   $autocommit
-     * @param bool   $debug
+     * @param  string  $brokers
+     * @param  string  $group
+     * @param  string  $compressionType
+     * @param  bool  $autocommit
+     * @param  bool  $debug
      */
-    public function __construct(string $brokers, string $group, string $compressionType, bool $autocommit, bool $debug)
-    {
+    public function __construct(
+        #[Inject(Type::CONFIG, 'arjuna.drivers.kafka.brokers')]
+        string $brokers,
+        #[Inject(Type::CONFIG, 'arjuna.group')]
+        string $group,
+        #[Inject(Type::CONFIG, 'arjuna.drivers.kafka.compression_type')]
+        string $compressionType,
+        #[Inject(Type::CONFIG, 'arjuna.drivers.kafka.autocommit')]
+        bool $autocommit,
+        #[Inject(Type::CONFIG, 'arjuna.drivers.kafka.debug')]
+        bool $debug
+    ) {
         $this->options = [
-            'brokers'          => $brokers,
-            'group'            => $group,
+            'brokers' => $brokers,
+            'group' => $group,
             'compression_type' => $compressionType,
-            'autocommit'       => $autocommit,
-            'debug'            => $debug,
+            'autocommit' => $autocommit,
+            'debug' => $debug,
         ];
     }
 
@@ -95,8 +97,13 @@ final class KafkaBrokerAdapter implements Broker
         return json_encode($message->toArray());
     }
 
-    private function createConfig(string $brokers, string $group, string $compressionType, bool $autoCommit, bool $debug): Conf
-    {
+    private function createConfig(
+        string $brokers,
+        string $group,
+        string $compressionType,
+        bool $autoCommit,
+        bool $debug
+    ): Conf {
         $conf = new Conf();
 
         $conf->set('metadata.broker.list', $brokers);
@@ -111,7 +118,7 @@ final class KafkaBrokerAdapter implements Broker
         });
 
         if (true === $debug) {
-            $conf->set('log_level', (string)LOG_DEBUG);
+            $conf->set('log_level', (string) LOG_DEBUG);
             $conf->set('debug', 'all');
         }
 
@@ -131,6 +138,10 @@ final class KafkaBrokerAdapter implements Broker
 
     private function config(): Conf
     {
+        if (!class_exists('\RdKafka\Conf')) {
+            throw new RuntimeException('Please install rdkafka extension to use kafka broker.');
+        }
+
         if (null !== $this->config) {
             return $this->config;
         }

@@ -7,7 +7,7 @@ namespace Pandawa\Arjuna\Broker;
 /**
  * @author  Iqbal Maulana <iq.bluejack@gmail.com>
  */
-interface Broker
+interface BrokerInterface
 {
     public function send(string $topic, $key, ProduceMessage $message): void;
 

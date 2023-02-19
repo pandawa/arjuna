@@ -4,10 +4,8 @@ declare(strict_types=1);
 
 namespace Pandawa\Arjuna\Messaging;
 
-use Borobudur\Component\Parameter\ImmutableParameter;
 use DateTimeImmutable;
 use DateTimeZone;
-use Exception;
 use Illuminate\Support\Str;
 
 /**
@@ -15,48 +13,21 @@ use Illuminate\Support\Str;
  */
 class DomainMessage implements Message
 {
-    /**
-     * @var mixed
-     */
-    protected $messageId;
+    protected mixed $messageId;
 
-    /**
-     * @var string
-     */
-    protected $messageName;
+    protected ?string $messageName;
 
-    /**
-     * @var int|float|string
-     */
-    protected $messageVersion;
+    protected int|float|string|null $messageVersion;
 
-    /**
-     * @var string
-     */
-    protected $messageType;
+    protected ?string $messageType;
 
-    /**
-     * @var DateTimeImmutable
-     */
-    protected $createdAt;
+    protected ?DateTimeImmutable $createdAt = null;
 
-    /**
-     * @var array
-     */
-    protected $metadata = [];
+    protected array $metadata = [];
 
-    /**
-     * @var array
-     */
-    protected $payload = [];
+    protected array $payload = [];
 
-    /**
-     * @param array $data
-     *
-     * @return DomainMessage|static
-     * @throws Exception
-     */
-    public static function fromArray(array $data): DomainMessage
+    public static function fromArray(array $data): static
     {
         $message = new static();
         $message->messageId = $data['message_id'] ?? null;
@@ -78,7 +49,7 @@ class DomainMessage implements Message
         return $message;
     }
 
-    public function messageId()
+    public function messageId(): mixed
     {
         return $this->messageId;
     }
@@ -88,27 +59,27 @@ class DomainMessage implements Message
         return $this->messageName;
     }
 
-    public function createdAt(): DateTimeImmutable
+    public function createdAt(): ?DateTimeImmutable
     {
         return $this->createdAt;
     }
 
-    public function metadata(): ImmutableParameter
+    public function metadata(): array
     {
-        return new ImmutableParameter($this->metadata);
+        return $this->metadata;
     }
 
-    public function payload(): ImmutableParameter
+    public function payload(): array
     {
-        return new ImmutableParameter($this->payload);
+        return $this->payload;
     }
 
-    public function messageVersion()
+    public function messageVersion(): int|float|string|null
     {
         return $this->messageVersion;
     }
 
-    public function messageType(): string
+    public function messageType(): ?string
     {
         return $this->messageType;
     }
@@ -129,11 +100,6 @@ class DomainMessage implements Message
         ];
     }
 
-    /**
-     * @param array $metadata
-     *
-     * @return static|Message
-     */
     public function withMetadata(array $metadata): Message
     {
         $message = clone $this;
@@ -143,13 +109,7 @@ class DomainMessage implements Message
         return $message;
     }
 
-    /**
-     * @param string $key
-     * @param mixed  $value
-     *
-     * @return static|Message
-     */
-    public function withAddedMetadata(string $key, $value): Message
+    public function withAddedMetadata(string $key, mixed $value): Message
     {
         $message = clone $this;
 

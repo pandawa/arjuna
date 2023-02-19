@@ -18,25 +18,12 @@ class Streamer
     public const CREATE = 'CREATE';
     public const NEW_ENTRIES = '>';
 
-    /**
-     * @var Connection|PhpRedisConnection
-     */
-    private $redis;
+    private Connection|PhpRedisConnection|null $redis = null;
 
-    /**
-     * @var string
-     */
-    private $connection;
-
-    /**
-     * @var string
-     */
-    private $group;
-
-    public function __construct(string $connection, string $group)
-    {
-        $this->connection = $connection;
-        $this->group = $group;
+    public function __construct(
+        private readonly string $connection,
+        private readonly string $group
+    ) {
     }
 
     public function add(string $key, string $id, array $message, int $retentionPeriod): void
@@ -90,8 +77,12 @@ class Streamer
         return false;
     }
 
-    public function createGroup(string $name, string $topic, string $from = '0', bool $createStreamIfNotExists = true): bool
-    {
+    public function createGroup(
+        string $name,
+        string $topic,
+        string $from = '0',
+        bool $createStreamIfNotExists = true
+    ): bool {
         if ($createStreamIfNotExists) {
             return $this->redis()->xGroup(self::CREATE, $topic, $name, $from, 'MKSTREAM');
         }
@@ -104,13 +95,14 @@ class Streamer
         return self::NEW_ENTRIES;
     }
 
-    /**
-     * @return Connection|PhpRedisConnection
-     */
-    private function redis()
+    private function redis(): Connection|PhpRedisConnection
     {
         if (null !== $redis = $this->redis) {
             return $redis;
+        }
+
+        if (!class_exists('\Pandawa\Bundle\RedisBundle\RedisBundle')) {
+            throw new RuntimeException('Please install "pandawa/redis-bundle" to use arjuna with Redis broker.');
         }
 
         $this->redis = Redis::connection($this->connection);

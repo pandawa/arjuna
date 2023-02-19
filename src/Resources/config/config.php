@@ -27,7 +27,7 @@ return [
         ],
     ],
 
-    'event_mappers' => [
-        // Register your event mappers
-    ],
+    'serializer' => 'serializer.default',
+
+    'transformer' => null,
 ];

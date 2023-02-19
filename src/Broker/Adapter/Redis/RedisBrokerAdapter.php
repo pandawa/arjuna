@@ -4,35 +4,30 @@ declare(strict_types=1);
 
 namespace Pandawa\Arjuna\Broker\Adapter\Redis;
 
-use Pandawa\Arjuna\Broker\Broker;
+use Pandawa\Annotations\DependencyInjection\Inject;
+use Pandawa\Annotations\DependencyInjection\Injectable;
+use Pandawa\Annotations\DependencyInjection\Type;
+use Pandawa\Arjuna\Broker\BrokerInterface;
 use Pandawa\Arjuna\Broker\Consumer;
 use Pandawa\Arjuna\Broker\ProduceMessage;
 
 /**
  * @author  Iqbal Maulana <iq.bluejack@gmail.com>
  */
-final class RedisBrokerAdapter implements Broker
+#[Injectable(tag: 'arjunaBroker')]
+final class RedisBrokerAdapter implements BrokerInterface
 {
-    /**
-     * @var Streamer
-     */
-    private $redis;
+    private Streamer $redis;
 
-    /**
-     * @var string
-     */
-    private $group;
-
-    /**
-     * @var int
-     */
-    private $retentionPeriod;
-
-    public function __construct(string $connection, string $group, int $retentionPeriod)
-    {
+    public function __construct(
+        #[Inject(Type::CONFIG, 'arjuna.drivers.redis.connection')]
+        string $connection,
+        #[Inject(Type::CONFIG, 'arjuna.group')]
+        private readonly string $group,
+        #[Inject(Type::CONFIG, 'arjuna.drivers.redis.retention_period')]
+        private readonly int $retentionPeriod
+    ) {
         $this->redis = new Streamer($connection, $group);
-        $this->group = $group;
-        $this->retentionPeriod = $retentionPeriod;
     }
 
     public function send(string $topic, $key, ProduceMessage $message): void

@@ -7,6 +7,6 @@ namespace Pandawa\Arjuna\Event;
 /**
  * @author  Iqbal Maulana <iq.bluejack@gmail.com>
  */
-final class MessageProcessed extends MessageEvent
+class MessageProcessed extends MessageEvent
 {
 }

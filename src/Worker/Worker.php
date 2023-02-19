@@ -5,18 +5,18 @@ declare(strict_types=1);
 namespace Pandawa\Arjuna\Worker;
 
 use Exception;
-use Illuminate\Contracts\Bus\Dispatcher as BusDispatcher;
 use Illuminate\Contracts\Debug\ExceptionHandler;
-use Illuminate\Contracts\Events\Dispatcher as EventDispatcher;
+use Illuminate\Support\Str;
 use Pandawa\Arjuna\Broker\BrokerManager;
 use Pandawa\Arjuna\Broker\ConsumedMessage;
 use Pandawa\Arjuna\Broker\Consumer;
 use Pandawa\Arjuna\Event\ConnectionExceptionOccurred;
 use Pandawa\Arjuna\Event\MessageExceptionOccurred;
 use Pandawa\Arjuna\Event\MessageProcessing;
+use Pandawa\Arjuna\Event\MessagePushedToQueue;
 use Pandawa\Arjuna\Job\ProcessConsumedMessageJob;
-use Pandawa\Arjuna\Messaging\Message;
-use Illuminate\Support\Str;
+use Pandawa\Contracts\Bus\BusInterface;
+use Pandawa\Contracts\Event\EventBusInterface;
 use RuntimeException;
 use Throwable;
 
@@ -25,38 +25,33 @@ use Throwable;
  */
 class Worker
 {
-    protected $broker;
-    protected $exceptions;
-    protected $dispatcher;
-    protected $event;
-
-    public function __construct(BusDispatcher $dispatcher, EventDispatcher $event, BrokerManager $broker, ExceptionHandler $exceptions)
-    {
-        $this->dispatcher = $dispatcher;
-        $this->event = $event;
-        $this->broker = $broker;
-        $this->exceptions = $exceptions;
+    public function __construct(
+        protected readonly BusInterface $bus,
+        protected readonly EventBusInterface $eventBus,
+        protected readonly BrokerManager $broker,
+        protected readonly ExceptionHandler $exceptions
+    ) {
     }
 
     public function run(WorkerOptions $options): void
     {
         try {
-            $consumer = $this->broker->driver($options->getBroker())->consumer();
+            $consumer = $this->broker->driver($options->broker)->consumer();
 
-            $consumer->subscribe($options->getTopics());
+            $consumer->subscribe($options->topics);
 
-            $player = new WorkerPlayer($this->event, $options, function (WorkerPlayer $player, WorkerOptions $options) use ($consumer) {
+            $player = new WorkerPlayer($this->eventBus, $options, function (WorkerPlayer $player, WorkerOptions $options) use ($consumer) {
                 try {
-                    if (null !== $message = $this->getMessage($consumer, $options->getTimeout())) {
+                    if (null !== $message = $this->getMessage($consumer, $options->timeout)) {
                         $this->processMessage($message, $options);
                     }
                 } catch (Exception $e) {
                     $this->stopWorkerIfLostConnection($e, $player);
 
-                    $this->event->dispatch(
+                    $this->eventBus->fire(
                         new ConnectionExceptionOccurred(
-                            $options->getBroker(),
-                            $options->getTopics(),
+                            $options->broker,
+                            $options->topics,
                             $e
                         )
                     );
@@ -65,33 +60,35 @@ class Worker
 
             $player->play();
         } catch (Exception $e) {
-            $this->event->dispatch(new ConnectionExceptionOccurred($options->getBroker(), $options->getTopics(), $e));
+            $this->eventBus->fire(new ConnectionExceptionOccurred($options->broker, $options->topics, $e));
         }
     }
 
-    protected function processMessage(Message $message, WorkerOptions $options): void
+    protected function processMessage(ConsumedMessage $message, WorkerOptions $options): void
     {
-        $this->event->dispatch(new MessageProcessing($options->getBroker(), $message, $options->getTopics()));
+        $this->eventBus->fire(new MessageProcessing($options->broker, $message, $options->topics));
 
         try {
-            if (null === $options->getQueue()) {
-                $this->dispatcher->dispatchNow(new ProcessConsumedMessageJob($message->toArray(), $options));
+            if (null === $options->queue) {
+                $this->bus->dispatchNow(new ProcessConsumedMessageJob($message, $options));
 
                 return;
             }
 
-            $this->dispatcher->dispatch(
-                (new ProcessConsumedMessageJob($message->toArray(), $options))
-                    ->onQueue($options->getQueue())
-                    ->onConnection($options->getQueueConnection())
+            $this->bus->dispatch(
+                (new ProcessConsumedMessageJob($message, $options))
+                    ->onQueue($options->queue)
+                    ->onConnection($options->queueConnection)
             );
+
+            $this->eventBus->fire(new MessagePushedToQueue($options->broker, $message, $options->topics));
         } catch (Exception $e) {
-            $this->event->dispatch(
+            $this->eventBus->fire(
                 new MessageExceptionOccurred(
-                    $options->getBroker(),
+                    $options->broker,
                     $message,
                     $e,
-                    $options->getTopics()
+                    $options->topics
                 )
             );
         }
@@ -112,7 +109,7 @@ class Worker
         }
     }
 
-    protected function stopWorkerIfLostConnection(Exception $e, ?WorkerPlayer $player)
+    protected function stopWorkerIfLostConnection(Exception $e, ?WorkerPlayer $player): void
     {
         if (null !== $player && $this->causedByLostConnection($e)) {
             $player->stop();

@@ -16,10 +16,7 @@ use RuntimeException;
  */
 final class KafkaConsumerAdapter implements Consumer
 {
-    /**
-     * @var KafkaConsumer
-     */
-    private $consumer;
+    private KafkaConsumer $consumer;
 
     /**
      * Constructor.
